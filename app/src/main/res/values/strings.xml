@@ -1,0 +1,107 @@
+<resources>
+    <string name="app_name">Serene Screen</string>
+    <string name="app">App</string>
+    <string name="set_as_default_launcher">Set as default launcher</string>
+    <string name="app_text_color">Text color</string>
+    <string name="double_tap_to_lock_screen">Double tap to lock</string>
+    <string name="experimental_">(experimental)</string>
+    <string name="admin_permission_message">Serene Screen promises to use lock screen permission responsibly. We do not collect or share any data.</string>
+    <string name="about">About</string>
+    <string name="off">Off</string>
+    <string name="on">On</string>
+    <string name="black">Black</string>
+    <string name="white">White</string>
+    <string name="change_default_launcher">Change default launcher</string>
+    <string name="privacy">Privacy</string>
+    <string name="share">Share</string>
+    <string name="rate">Rate</string>
+    <string name="follow">Follow</string>
+    <string name="email">Email</string>
+    <string name="github">Github</string>
+    <string name="donate">Donate</string>
+    <string name="swipe_up_for_apps">1. Swipe up for all apps</string>
+    <string name="long_press_for_settings">2. Long press anywhere for settings</string>
+    <string name="apps_on_home_screen">Apps on home screen</string>
+    <string name="daily_wallpaper_update">Daily new wallpaper</string>
+    <string name="left">Left</string>
+    <string name="right">Right</string>
+    <string name="center">Center</string>
+    <string name="home_layout_alignment">App alignment</string>
+    <string name="swipe_left_app">Swipe left app</string>
+    <string name="swipe_right_app">Swipe right app</string>
+    <string name="_0">0</string>
+    <string name="_1">1</string>
+    <string name="_2">2</string>
+    <string name="_3">3</string>
+    <string name="_4">4</string>
+    <string name="_5">5</string>
+    <string name="_6">6</string>
+    <string name="_7">7</string>
+    <string name="_8">8</string>
+    <string name="app_drawer_tips">Tip: Start typing an app name to auto-launch it</string>
+    <string name="okay">Okay</string>
+    <string name="cool">Cool!</string>
+    <string name="double_tap_lock_is_enabled_message">If double tap lock disables fingerprint or face unlock, open Serene Screen settings, tap on \'experimental\' and follow the instructions. Thank you.</string>
+    <string name="triple_tap_lock_message">How it works:
+        \nOnce you double-tap, screen will go dark and the phone will lock itself in 5 seconds.
+        \n\nDuring this time, you can double-tap to <b>unlock</b> or triple-tap anytime to fully lock the phone immediately.
+        \n\nNote: Turn this OFF first if you decide to delete Serene Screen. Thank you.</string>
+    <string name="auto_show_keyboard">Auto show keyboard</string>
+    <string name="hide">Hide</string>
+    <string name="status_bar">Show status bar</string>
+    <string name="rename">Rename</string>
+    <string name="show_date_time">Show date time</string>
+    <string name="appearance">Appearance</string>
+    <string name="gestures">Gestures</string>
+    <string name="theme_mode">Theme mode</string>
+    <string name="system_default">System</string>
+    <string name="dark">Dark</string>
+    <string name="light">Light</string>
+    <string name="double_tap_lock_uninstall_message">Double tap to lock enabled.
+        \n\nNote: Turn this OFF first if you decide to delete Serene Screen.</string>
+    <string name="welcome_to_serenescreen_settings">Our About page on the bottom has answers to all your questions. Don\'t forget. :)
+        \n\nThank you.</string>
+    <string name="rate_us_message">Hey, do you find Serene Screen useful? If yes, a 5-star rating is the best way to support us.
+        \n\nThank you and you won\'t see this again.</string>
+    <string name="share_message">Hi, do you think your friends would love Serene Screen as much as you do?
+        \n\nShare the app and help us spread the word. Thank you!</string>
+    <string name="keyboard_message">Hi, keyboard is the fastest way to find and launch apps in Serene Screen. Can we request you to keep this On for a few more days and then decide?
+        \n\nThe choice is always yours.</string>
+    <string name="accessibility_service_description">The accessibility permission is required to enable double tap to lock. Any data acquired by SereneScreen via this service will not leave your device.</string>
+    <string name="lock_layout_description">lock layout description to be used a unique id to lock screen</string>
+    <string name="support_serenescreen_for_free">Support Serene Screen for free by using our Amazon affiliate link.</string>
+    <string name="support_serenescreen_message">Every time you buy something using our link, we get a small commission. Please save the link and use it whenever you shop online.\nThank you!</string>
+    <string name="open">Open link</string>
+    <string name="copy">Copy</string>
+    <string name="close">Close</string>
+    <string name="not_now">Not now</string>
+    <string name="public_roadmap">SereneScreen public roadmap</string>
+    <string name="instagram">Instagram</string>
+    <string name="twitter">Twitter</string>
+    <string name="roadmap">Roadmap</string>
+    <string name="date">Date</string>
+    <string name="date_only">Date only</string>
+    <string name="bottom_on">"Bottom: On "</string>
+    <string name="bottom_off">Bottom: Off</string>
+    <string name="please_set_serenescreen_as_default_first">Please set Serene Screen as your default launcher first</string>
+    <string name="settings_footer"><u>PRSereneScreen</u></string>
+    <string name="affiliate">Affiliate</string>
+    <string name="tip_start_typing_for_rename">Tip: Start typing for app RENAME option</string>
+    <string name="hidden_apps_message">Note: Tap on \'Serene Screen\' at the top of this Settings page to find your hidden apps.\n\nMore details available in our About page below.</string>
+    <string name="swipe_down_for">Swipe down for</string>
+    <string name="search">Search</string>
+    <string name="notifications">Notifications</string>
+    <string name="accessibility_disclosure">Please turn on or off Serene Screen\'s accessibility service in your device\'s settings to enable or disable this feature.
+    \n\nPlease note that this service is only used to let you turn off your device\'s screen using the double tap gesture.
+    Our accessibility service does not collect or share any data.</string>
+    <string name="accept">Accept</string>
+    <string name="permission">Permission</string>
+    <string name="double_tap_lock">Double tap to lock</string>
+    <string name="enable">Enable</string>
+    <string name="disable">Disable</string>
+    <string name="not_working"><u>Not working?</u></string>
+    <string name="info">Info</string>
+    <string name="delete">Delete</string>
+    <string name="day_battery">%s, %d%%</string>
+    <string name="text_size">Text size</string>
+</resources>
