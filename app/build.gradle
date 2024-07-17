@@ -15,10 +15,10 @@ android {
 
     defaultConfig {
         applicationId "app.serenescreen"
-        minSdkVersion 23
-        targetSdkVersion 33
-        versionCode 65
-        versionName "v5.0.0"
+        minSdkVersion 24
+        targetSdkVersion 34
+        versionCode 66
+        versionName "v5.1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
