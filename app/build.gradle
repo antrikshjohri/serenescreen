@@ -16,7 +16,7 @@ android {
 
     defaultConfig {
         applicationId "app.serenescreen"
-        minSdkVersion 24
+        minSdkVersion 23
         targetSdkVersion 34
         versionCode 67
         versionName "v5.2.0"
