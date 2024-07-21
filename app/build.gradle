@@ -18,8 +18,8 @@ android {
         applicationId "app.serenescreen"
         minSdkVersion 23
         targetSdkVersion 34
-        versionCode 68
-        versionName "v5.2.0"
+        versionCode 69
+        versionName "v5.2.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
