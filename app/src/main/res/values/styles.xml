@@ -27,10 +27,11 @@
         <!--        <item name="android:windowTranslucentStatus">false</item>-->
         <!--        <item name="android:windowTranslucentNavigation">true</item>-->
 
+
+
         <item name="colorPrimary">@color/black</item>
         <item name="colorPrimaryDark">@android:color/darker_gray</item>
         <item name="colorAccent">@color/black</item>
-
         <item name="primaryColor">@color/black</item>
         <item name="primaryInverseColor">@color/blackInverse</item>
         <item name="primaryTextShadowColor">@color/blackInverseTrans50</item>
@@ -42,6 +43,8 @@
         <item name="primaryShadeColor">@color/blackInverseTrans10</item>
         <item name="primaryShadeDarkColor">@color/blackInverseTrans25</item>
         <item name="dialogShadeColor">@color/blackInverseTrans50</item>
+        <item name="customBackground">@color/white</item>
+        <item name="customTileColor">@color/blackTrans10</item>
 
     </style>
 
