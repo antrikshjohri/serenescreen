@@ -44,7 +44,7 @@
         <item name="primaryShadeDarkColor">@color/blackInverseTrans25</item>
         <item name="dialogShadeColor">@color/blackInverseTrans50</item>
         <item name="customBackground">@color/white</item>
-        <item name="customTileColor">@color/blackTrans10</item>
+        <item name="customTileColor">@color/blackTrans5</item>
 
     </style>
 

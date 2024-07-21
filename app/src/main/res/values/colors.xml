@@ -26,6 +26,7 @@
     <color name="blackTrans50">#80000000</color>
     <color name="blackTrans20">#33000000</color>
     <color name="blackTrans10">#1A000000</color>
+    <color name="blackTrans5">#0D000000</color>
     <color name="blackInverse">#FFFFFF</color>
     <color name="blackInverseTrans10">#1AFFFFFF</color>
     <color name="blackInverseTrans25">#40FFFFFF</color>

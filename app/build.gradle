@@ -2,7 +2,8 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 32
+    //compileSdkVersion 33
+    compileSdk 34
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -17,8 +18,8 @@ android {
         applicationId "app.serenescreen"
         minSdkVersion 24
         targetSdkVersion 34
-        versionCode 66
-        versionName "v5.1.0"
+        versionCode 67
+        versionName "v5.2.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
