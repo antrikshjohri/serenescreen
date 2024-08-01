@@ -510,3 +510,14 @@ fun View.animateAlpha(alpha: Float = 1.0f) {
         start()
     }
 }
+
+fun Context.rateApp() {
+    val intent = Intent(
+        Intent.ACTION_VIEW,
+        Uri.parse(Constants.URL_SERENESCREEN_PLAY_STORE)
+    )
+    var flags = Intent.FLAG_ACTIVITY_NO_HISTORY or Intent.FLAG_ACTIVITY_MULTIPLE_TASK
+    flags = flags or Intent.FLAG_ACTIVITY_NEW_DOCUMENT
+    intent.addFlags(flags)
+    startActivity(intent)
+}

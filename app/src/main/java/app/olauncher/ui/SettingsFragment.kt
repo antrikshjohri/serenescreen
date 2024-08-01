@@ -129,7 +129,11 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
             R.id.notifications -> updateSwipeDownAction(Constants.SwipeDownAction.NOTIFICATIONS)
             R.id.search -> updateSwipeDownAction(Constants.SwipeDownAction.SEARCH)
 
-
+            //R.id.rate -> requireContext().openUrl(Constants.URL_SERENESCREEN_PLAY_STORE)
+            R.id.rate -> {
+                prefs.rateClicked = true
+                requireActivity().rateApp()
+            }
         }
     }
 
@@ -185,6 +189,7 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         binding.closeAccessibility.setOnClickListener(this)
         binding.notWorking.setOnClickListener(this)
 
+        binding.rate.setOnClickListener(this)
 
         binding.maxApps0.setOnClickListener(this)
         binding.maxApps1.setOnClickListener(this)

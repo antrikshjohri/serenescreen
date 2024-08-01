@@ -70,7 +70,7 @@ object Constants {
     //const val URL_SERENESCREEN_PRIVACY = "https://tanujnotes.notion.site/SereneScreen-Privacy-Policy-dd6ac5101ddd4b3da9d27057889d44ab"
     //const val URL_DOUBLE_TAP = "https://tanujnotes.notion.site/Double-tap-to-lock-SereneScreen-0f7fb103ec1f47d7a90cdfdcd7fb86ef"
     //const val URL_SERENESCREEN_GITHUB = "https://www.github.com/tanujnotes/SereneScreen"
-    const val URL_SERENESCREEN_PLAY_STORE = "https://play.google.com/store/apps/details?id=app.olauncher"
+    const val URL_SERENESCREEN_PLAY_STORE = "https://play.google.com/store/apps/details?id=app.serenescreen"
     //const val URL_PLAY_STORE_DEV = "https://play.google.com/store/apps/dev?id=7198807840081074933"
     //const val URL_TWITTER_TANUJ = "https://twitter.com/tanujnotes"
     //const val URL_INSTA_SERENESCREEN = "https://instagram.com/serenescreenapp"

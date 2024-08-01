@@ -14,7 +14,7 @@
     <string name="change_default_launcher">Change default launcher</string>
     <string name="privacy">Privacy</string>
     <string name="share">Share</string>
-    <string name="rate">Rate</string>
+    <string name="rate"><u>Rate us on Google Play Store</u></string>
     <string name="follow">Follow</string>
     <string name="email">Email</string>
     <string name="github">Github</string>
