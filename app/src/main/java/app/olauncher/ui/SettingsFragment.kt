@@ -131,7 +131,7 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
 
             //R.id.rate -> requireContext().openUrl(Constants.URL_SERENESCREEN_PLAY_STORE)
             R.id.rate -> {
-                prefs.rateClicked = true
+                //prefs.rateClicked = true
                 requireActivity().rateApp()
             }
         }
@@ -585,14 +585,13 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
     private fun populateActionHints() {
         when (prefs.toShowHintCounter) {
             Constants.HINT_RATE_US -> {
-                viewModel.showMessageDialog(getString(R.string.rate_us_message))
+                //viewModel.showMessageDialog(getString(R.string.rate_us_message)) Removed this pop up message <Antriksh>
                 binding.scrollView.post {
                     binding.scrollView.fullScroll(View.FOCUS_DOWN)
                 }
             }
         }
         if (viewModel.isSereneScreenDefault.value != true) return
-
     }
 
     override fun onDestroyView() {
