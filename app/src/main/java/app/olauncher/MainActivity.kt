@@ -30,6 +30,7 @@ import app.serenescreen.helper.*
 import android.os.UserManager
 import java.util.*
 import android.content.pm.PackageManager
+import com.google.firebase.analytics.FirebaseAnalytics
 
 
 class MainActivity : AppCompatActivity() {
@@ -38,6 +39,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavController
     private lateinit var viewModel: MainViewModel
     private lateinit var binding: ActivityMainBinding
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
 
 
 
@@ -60,7 +62,8 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
+        // Initialize Firebase Analytics
+        firebaseAnalytics = FirebaseAnalytics.getInstance(this)
 
 
         navController = Navigation.findNavController(this, R.id.nav_host_fragment)

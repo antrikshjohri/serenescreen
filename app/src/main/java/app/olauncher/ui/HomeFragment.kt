@@ -26,6 +26,7 @@ import app.serenescreen.listener.OnSwipeTouchListener
 import app.serenescreen.listener.ViewSwipeTouchListener
 import java.text.SimpleDateFormat
 import java.util.*
+import com.google.firebase.analytics.FirebaseAnalytics
 
 class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener {
 
@@ -33,6 +34,8 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
     private lateinit var viewModel: MainViewModel
     private lateinit var deviceManager: DevicePolicyManager
     private lateinit var vibrator: Vibrator
+
+    private lateinit var firebaseAnalytics: FirebaseAnalytics // Declare FirebaseAnalytics instance
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
@@ -51,6 +54,9 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
 
         deviceManager = context?.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
         vibrator = context?.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+
+        // Initialize Firebase Analytics
+        firebaseAnalytics = FirebaseAnalytics.getInstance(requireContext())
 
         initObservers()
         setHomeAlignment(prefs.homeAlignment)
@@ -71,7 +77,17 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
             R.id.lock -> {}
             R.id.clock -> openAlarmApp(requireContext())
             R.id.date -> openCalendar(requireContext())
-            R.id.setDefaultLauncher -> viewModel.resetDefaultLauncherApp(requireContext())
+            R.id.setDefaultLauncher -> {
+                viewModel.resetDefaultLauncherApp(requireContext())
+
+                // Log an event when the button is clicked
+                val bundle = Bundle().apply {
+                    putString(FirebaseAnalytics.Param.ITEM_ID, "set_default_launcher_button")
+                    putString(FirebaseAnalytics.Param.ITEM_NAME, "Set Default Launcher")
+                    putString(FirebaseAnalytics.Param.CONTENT_TYPE, "button")
+                }
+                firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle)
+            }
             else -> {
                 try { // Launch app
                     val appLocation = view.tag.toString().toInt()
