@@ -24,6 +24,7 @@ import app.serenescreen.data.Prefs
 import app.serenescreen.databinding.FragmentSettingsBinding
 import app.serenescreen.helper.*
 import app.serenescreen.listener.DeviceAdmin
+import com.google.firebase.analytics.FirebaseAnalytics
 
 class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListener {
 
@@ -31,6 +32,9 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
     private lateinit var viewModel: MainViewModel
     private lateinit var deviceManager: DevicePolicyManager
     private lateinit var componentName: ComponentName
+
+    private lateinit var firebaseAnalytics: FirebaseAnalytics // Declare FirebaseAnalytics instance
+
 
     private var _binding: FragmentSettingsBinding? = null
     private val binding get() = _binding!!
@@ -51,6 +55,10 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         deviceManager = context?.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
         componentName = ComponentName(requireContext(), DeviceAdmin::class.java)
         checkAdminPermission()
+
+        // Initialize Firebase Analytics
+        firebaseAnalytics = FirebaseAnalytics.getInstance(requireContext())
+
 
         binding.homeAppsNum.text = prefs.homeAppsNum.toString()
         populateKeyboardText()
@@ -133,6 +141,14 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
             R.id.rate -> {
                 //prefs.rateClicked = true
                 requireActivity().rateApp()
+                // Log an event when the button is clicked
+                val bundle = Bundle().apply {
+                    putString(FirebaseAnalytics.Param.ITEM_ID, "rate_on_play_store_button")
+                    putString(FirebaseAnalytics.Param.ITEM_NAME, "Rate us on Play Store")
+                    putString(FirebaseAnalytics.Param.CONTENT_TYPE, "button")
+                }
+                firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle)
+
             }
         }
     }
