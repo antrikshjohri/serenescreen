@@ -278,6 +278,12 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
             prefs.getAppActivityClassName(location),
             prefs.getAppUser(location)
         )
+        val bundle = Bundle().apply {
+            putString(FirebaseAnalytics.Param.ITEM_ID, "home_app_clicked")
+            putString(FirebaseAnalytics.Param.ITEM_NAME, "Home app clicked")
+            putString(FirebaseAnalytics.Param.CONTENT_TYPE, "button")
+        }
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle)
     }
 
     private fun launchApp(appName: String, packageName: String, activityClassName: String?, userString: String) {
