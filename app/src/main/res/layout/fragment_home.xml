@@ -89,7 +89,6 @@
             android:hint="@string/app"
             android:paddingVertical="@dimen/home_app_padding_vertical"
             android:tag="@string/_1"
-            android:visibility="gone"
             tools:visibility="visible" />
 
         <TextView
@@ -100,7 +99,6 @@
             android:hint="@string/app"
             android:paddingVertical="@dimen/home_app_padding_vertical"
             android:tag="@string/_2"
-            android:visibility="gone"
             tools:visibility="visible" />
 
         <TextView
@@ -111,7 +109,6 @@
             android:hint="@string/app"
             android:paddingVertical="@dimen/home_app_padding_vertical"
             android:tag="@string/_3"
-            android:visibility="gone"
             tools:visibility="visible" />
 
         <TextView
@@ -122,7 +119,6 @@
             android:hint="@string/app"
             android:paddingVertical="@dimen/home_app_padding_vertical"
             android:tag="@string/_4"
-            android:visibility="gone"
             tools:visibility="visible" />
 
         <TextView
@@ -133,7 +129,6 @@
             android:hint="@string/app"
             android:paddingVertical="@dimen/home_app_padding_vertical"
             android:tag="@string/_5"
-            android:visibility="gone"
             tools:visibility="visible" />
 
         <TextView
@@ -144,7 +139,6 @@
             android:hint="@string/app"
             android:paddingVertical="@dimen/home_app_padding_vertical"
             android:tag="@string/_6"
-            android:visibility="gone"
             tools:visibility="visible" />
 
         <TextView
@@ -155,7 +149,6 @@
             android:hint="@string/app"
             android:paddingVertical="@dimen/home_app_padding_vertical"
             android:tag="@string/_7"
-            android:visibility="gone"
             tools:visibility="visible" />
 
         <TextView
@@ -166,7 +159,6 @@
             android:hint="@string/app"
             android:paddingVertical="@dimen/home_app_padding_vertical"
             android:tag="@string/_8"
-            android:visibility="gone"
             tools:visibility="visible" />
 
     </LinearLayout>
