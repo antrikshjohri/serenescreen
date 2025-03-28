@@ -109,6 +109,14 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
             R.id.homeApp6 -> showAppList(Constants.FLAG_SET_HOME_APP_6, prefs.appName6.isNotEmpty(), true)
             R.id.homeApp7 -> showAppList(Constants.FLAG_SET_HOME_APP_7, prefs.appName7.isNotEmpty(), true)
             R.id.homeApp8 -> showAppList(Constants.FLAG_SET_HOME_APP_8, prefs.appName8.isNotEmpty(), true)
+            R.id.homeApp9 -> showAppList(Constants.FLAG_SET_HOME_APP_9, prefs.appName9.isNotEmpty(), true)
+            R.id.homeApp10 -> showAppList(Constants.FLAG_SET_HOME_APP_10, prefs.appName10.isNotEmpty(), true)
+            R.id.homeApp11 -> showAppList(Constants.FLAG_SET_HOME_APP_11, prefs.appName11.isNotEmpty(), true)
+            R.id.homeApp12 -> showAppList(Constants.FLAG_SET_HOME_APP_12, prefs.appName12.isNotEmpty(), true)
+            R.id.homeApp13 -> showAppList(Constants.FLAG_SET_HOME_APP_13, prefs.appName13.isNotEmpty(), true)
+            R.id.homeApp14 -> showAppList(Constants.FLAG_SET_HOME_APP_14, prefs.appName14.isNotEmpty(), true)
+            R.id.homeApp15 -> showAppList(Constants.FLAG_SET_HOME_APP_15, prefs.appName15.isNotEmpty(), true)
+            R.id.homeApp16 -> showAppList(Constants.FLAG_SET_HOME_APP_16, prefs.appName16.isNotEmpty(), true)
         }
         return true
     }
@@ -150,6 +158,14 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         binding.homeApp6.setOnTouchListener(getViewSwipeTouchListener(context, binding.homeApp6))
         binding.homeApp7.setOnTouchListener(getViewSwipeTouchListener(context, binding.homeApp7))
         binding.homeApp8.setOnTouchListener(getViewSwipeTouchListener(context, binding.homeApp8))
+        binding.homeApp9.setOnTouchListener(getViewSwipeTouchListener(context, binding.homeApp9))
+        binding.homeApp10.setOnTouchListener(getViewSwipeTouchListener(context, binding.homeApp10))
+        binding.homeApp11.setOnTouchListener(getViewSwipeTouchListener(context, binding.homeApp11))
+        binding.homeApp12.setOnTouchListener(getViewSwipeTouchListener(context, binding.homeApp12))
+        binding.homeApp13.setOnTouchListener(getViewSwipeTouchListener(context, binding.homeApp13))
+        binding.homeApp14.setOnTouchListener(getViewSwipeTouchListener(context, binding.homeApp14))
+        binding.homeApp15.setOnTouchListener(getViewSwipeTouchListener(context, binding.homeApp15))
+        binding.homeApp16.setOnTouchListener(getViewSwipeTouchListener(context, binding.homeApp16))
     }
 
     private fun initClickListeners() {
@@ -171,6 +187,14 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         binding.homeApp6.gravity = horizontalGravity
         binding.homeApp7.gravity = horizontalGravity
         binding.homeApp8.gravity = horizontalGravity
+        binding.homeApp9.gravity = horizontalGravity
+        binding.homeApp10.gravity = horizontalGravity
+        binding.homeApp11.gravity = horizontalGravity
+        binding.homeApp12.gravity = horizontalGravity
+        binding.homeApp13.gravity = horizontalGravity
+        binding.homeApp14.gravity = horizontalGravity
+        binding.homeApp15.gravity = horizontalGravity
+        binding.homeApp16.gravity = horizontalGravity
     }
 
     private fun populateDateTime() {
@@ -248,6 +272,62 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
             prefs.appName8 = ""
             prefs.appPackage8 = ""
         }
+        if (homeAppsNum == 8) return
+
+        binding.homeApp9.visibility = View.VISIBLE
+        if (!setHomeAppText(binding.homeApp9, prefs.appName9, prefs.appPackage9, prefs.appUser9)) {
+            prefs.appName9 = ""
+            prefs.appPackage9 = ""
+        }
+        if (homeAppsNum == 9) return
+
+        binding.homeApp10.visibility = View.VISIBLE
+        if (!setHomeAppText(binding.homeApp10, prefs.appName10, prefs.appPackage10, prefs.appUser10)) {
+            prefs.appName10 = ""
+            prefs.appPackage10 = ""
+        }
+        if (homeAppsNum == 10) return
+
+        binding.homeApp11.visibility = View.VISIBLE
+        if (!setHomeAppText(binding.homeApp11, prefs.appName11, prefs.appPackage11, prefs.appUser11)) {
+            prefs.appName11 = ""
+            prefs.appPackage11 = ""
+        }
+        if (homeAppsNum == 11) return
+
+        binding.homeApp12.visibility = View.VISIBLE
+        if (!setHomeAppText(binding.homeApp12, prefs.appName12, prefs.appPackage12, prefs.appUser12)) {
+            prefs.appName12 = ""
+            prefs.appPackage12 = ""
+        }
+        if (homeAppsNum == 12) return
+
+        binding.homeApp13.visibility = View.VISIBLE
+        if (!setHomeAppText(binding.homeApp13, prefs.appName13, prefs.appPackage13, prefs.appUser13)) {
+            prefs.appName13 = ""
+            prefs.appPackage13 = ""
+        }
+        if (homeAppsNum == 13) return
+
+        binding.homeApp14.visibility = View.VISIBLE
+        if (!setHomeAppText(binding.homeApp14, prefs.appName14, prefs.appPackage14, prefs.appUser14)) {
+            prefs.appName14 = ""
+            prefs.appPackage14 = ""
+        }
+        if (homeAppsNum == 14) return
+
+        binding.homeApp15.visibility = View.VISIBLE
+        if (!setHomeAppText(binding.homeApp15, prefs.appName15, prefs.appPackage15, prefs.appUser15)) {
+            prefs.appName15 = ""
+            prefs.appPackage15 = ""
+        }
+        if (homeAppsNum == 15) return
+
+        binding.homeApp16.visibility = View.VISIBLE
+        if (!setHomeAppText(binding.homeApp16, prefs.appName16, prefs.appPackage16, prefs.appUser16)) {
+            prefs.appName16 = ""
+            prefs.appPackage16 = ""
+        }
     }
 
     private fun setHomeAppText(textView: TextView, appName: String, packageName: String, userString: String): Boolean {
@@ -268,6 +348,14 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         binding.homeApp6.visibility = View.GONE
         binding.homeApp7.visibility = View.GONE
         binding.homeApp8.visibility = View.GONE
+        binding.homeApp9.visibility = View.GONE
+        binding.homeApp10.visibility = View.GONE
+        binding.homeApp11.visibility = View.GONE
+        binding.homeApp12.visibility = View.GONE
+        binding.homeApp13.visibility = View.GONE
+        binding.homeApp14.visibility = View.GONE
+        binding.homeApp15.visibility = View.GONE
+        binding.homeApp16.visibility = View.GONE
     }
 
     private fun homeAppClicked(location: Int) {

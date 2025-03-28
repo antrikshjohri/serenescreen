@@ -54,6 +54,14 @@ object Constants {
     const val FLAG_SET_HOME_APP_6 = 6
     const val FLAG_SET_HOME_APP_7 = 7
     const val FLAG_SET_HOME_APP_8 = 8
+    const val FLAG_SET_HOME_APP_9 = 9
+    const val FLAG_SET_HOME_APP_10 = 10
+    const val FLAG_SET_HOME_APP_11 = 11
+    const val FLAG_SET_HOME_APP_12 = 12
+    const val FLAG_SET_HOME_APP_13 = 13
+    const val FLAG_SET_HOME_APP_14 = 14
+    const val FLAG_SET_HOME_APP_15 = 15
+    const val FLAG_SET_HOME_APP_16 = 16
 
     const val FLAG_SET_SWIPE_LEFT_APP = 11
     const val FLAG_SET_SWIPE_RIGHT_APP = 12
