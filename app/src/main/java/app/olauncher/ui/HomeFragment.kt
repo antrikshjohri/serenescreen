@@ -2,11 +2,13 @@ package app.serenescreen.ui
 
 import android.app.admin.DevicePolicyManager
 import android.content.Context
+import android.content.Intent
 import android.os.BatteryManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Vibrator
 import android.view.*
+import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.os.bundleOf
@@ -40,6 +42,25 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
+    private lateinit var homeApp1: TextView
+    private lateinit var homeApp2: TextView
+    private lateinit var homeApp3: TextView
+    private lateinit var homeApp4: TextView
+    private lateinit var homeApp5: TextView
+    private lateinit var homeApp6: TextView
+    private lateinit var homeApp7: TextView
+    private lateinit var homeApp8: TextView
+    private lateinit var homeApp9: TextView
+    private lateinit var homeApp10: TextView
+    private lateinit var homeApp11: TextView
+    private lateinit var homeApp12: TextView
+    private lateinit var homeApp13: TextView
+    private lateinit var homeApp14: TextView
+    private lateinit var homeApp15: TextView
+    private lateinit var homeApp16: TextView
+
+    private lateinit var swipeTouchListener: View.OnTouchListener
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
@@ -57,6 +78,62 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
 
         // Initialize Firebase Analytics
         firebaseAnalytics = FirebaseAnalytics.getInstance(requireContext())
+
+        // Initialize swipe touch listener
+        swipeTouchListener = getSwipeGestureListener(requireContext())
+
+        homeApp1 = binding.homeApp1!!
+        homeApp2 = binding.homeApp2!!
+        homeApp3 = binding.homeApp3!!
+        homeApp4 = binding.homeApp4!!
+        homeApp5 = binding.homeApp5!!
+        homeApp6 = binding.homeApp6!!
+        homeApp7 = binding.homeApp7!!
+        homeApp8 = binding.homeApp8!!
+        homeApp9 = binding.homeApp9!!
+        homeApp10 = binding.homeApp10!!
+        homeApp11 = binding.homeApp11!!
+        homeApp12 = binding.homeApp12!!
+        homeApp13 = binding.homeApp13!!
+        homeApp14 = binding.homeApp14!!
+        homeApp15 = binding.homeApp15!!
+        homeApp16 = binding.homeApp16!!
+
+        // Initialize other views
+        homeApp1.setOnClickListener { onHomeAppClick(1) }
+        homeApp2.setOnClickListener { onHomeAppClick(2) }
+        homeApp3.setOnClickListener { onHomeAppClick(3) }
+        homeApp4.setOnClickListener { onHomeAppClick(4) }
+        homeApp5.setOnClickListener { onHomeAppClick(5) }
+        homeApp6.setOnClickListener { onHomeAppClick(6) }
+        homeApp7.setOnClickListener { onHomeAppClick(7) }
+        homeApp8.setOnClickListener { onHomeAppClick(8) }
+        homeApp9.setOnClickListener { onHomeAppClick(9) }
+        homeApp10.setOnClickListener { onHomeAppClick(10) }
+        homeApp11.setOnClickListener { onHomeAppClick(11) }
+        homeApp12.setOnClickListener { onHomeAppClick(12) }
+        homeApp13.setOnClickListener { onHomeAppClick(13) }
+        homeApp14.setOnClickListener { onHomeAppClick(14) }
+        homeApp15.setOnClickListener { onHomeAppClick(15) }
+        homeApp16.setOnClickListener { onHomeAppClick(16) }
+
+        // Add swipe touch listeners
+        homeApp1.setOnTouchListener(swipeTouchListener)
+        homeApp2.setOnTouchListener(swipeTouchListener)
+        homeApp3.setOnTouchListener(swipeTouchListener)
+        homeApp4.setOnTouchListener(swipeTouchListener)
+        homeApp5.setOnTouchListener(swipeTouchListener)
+        homeApp6.setOnTouchListener(swipeTouchListener)
+        homeApp7.setOnTouchListener(swipeTouchListener)
+        homeApp8.setOnTouchListener(swipeTouchListener)
+        homeApp9.setOnTouchListener(swipeTouchListener)
+        homeApp10.setOnTouchListener(swipeTouchListener)
+        homeApp11.setOnTouchListener(swipeTouchListener)
+        homeApp12.setOnTouchListener(swipeTouchListener)
+        homeApp13.setOnTouchListener(swipeTouchListener)
+        homeApp14.setOnTouchListener(swipeTouchListener)
+        homeApp15.setOnTouchListener(swipeTouchListener)
+        homeApp16.setOnTouchListener(swipeTouchListener)
 
         initObservers()
         setHomeAlignment(prefs.homeAlignment)
@@ -150,22 +227,24 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
     private fun initSwipeTouchListener() {
         val context = requireContext()
         binding.mainLayout.setOnTouchListener(getSwipeGestureListener(context))
-        binding.homeApp1.setOnTouchListener(getViewSwipeTouchListener(context, binding.homeApp1))
-        binding.homeApp2.setOnTouchListener(getViewSwipeTouchListener(context, binding.homeApp2))
-        binding.homeApp3.setOnTouchListener(getViewSwipeTouchListener(context, binding.homeApp3))
-        binding.homeApp4.setOnTouchListener(getViewSwipeTouchListener(context, binding.homeApp4))
-        binding.homeApp5.setOnTouchListener(getViewSwipeTouchListener(context, binding.homeApp5))
-        binding.homeApp6.setOnTouchListener(getViewSwipeTouchListener(context, binding.homeApp6))
-        binding.homeApp7.setOnTouchListener(getViewSwipeTouchListener(context, binding.homeApp7))
-        binding.homeApp8.setOnTouchListener(getViewSwipeTouchListener(context, binding.homeApp8))
-        binding.homeApp9.setOnTouchListener(getViewSwipeTouchListener(context, binding.homeApp9))
-        binding.homeApp10.setOnTouchListener(getViewSwipeTouchListener(context, binding.homeApp10))
-        binding.homeApp11.setOnTouchListener(getViewSwipeTouchListener(context, binding.homeApp11))
-        binding.homeApp12.setOnTouchListener(getViewSwipeTouchListener(context, binding.homeApp12))
-        binding.homeApp13.setOnTouchListener(getViewSwipeTouchListener(context, binding.homeApp13))
-        binding.homeApp14.setOnTouchListener(getViewSwipeTouchListener(context, binding.homeApp14))
-        binding.homeApp15.setOnTouchListener(getViewSwipeTouchListener(context, binding.homeApp15))
-        binding.homeApp16.setOnTouchListener(getViewSwipeTouchListener(context, binding.homeApp16))
+        binding.homeAppsLayout.setOnTouchListener(getSwipeGestureListener(context))
+        binding.root.findViewById<ScrollView>(R.id.scrollView)?.setOnTouchListener(getSwipeGestureListener(context))
+        binding.homeApp1!!.setOnTouchListener(getViewSwipeTouchListener(context, binding.homeApp1!!))
+        binding.homeApp2!!.setOnTouchListener(getViewSwipeTouchListener(context, binding.homeApp2!!))
+        binding.homeApp3!!.setOnTouchListener(getViewSwipeTouchListener(context, binding.homeApp3!!))
+        binding.homeApp4!!.setOnTouchListener(getViewSwipeTouchListener(context, binding.homeApp4!!))
+        binding.homeApp5!!.setOnTouchListener(getViewSwipeTouchListener(context, binding.homeApp5!!))
+        binding.homeApp6!!.setOnTouchListener(getViewSwipeTouchListener(context, binding.homeApp6!!))
+        binding.homeApp7!!.setOnTouchListener(getViewSwipeTouchListener(context, binding.homeApp7!!))
+        binding.homeApp8!!.setOnTouchListener(getViewSwipeTouchListener(context, binding.homeApp8!!))
+        binding.homeApp9!!.setOnTouchListener(getViewSwipeTouchListener(context, binding.homeApp9!!))
+        binding.homeApp10!!.setOnTouchListener(getViewSwipeTouchListener(context, binding.homeApp10!!))
+        binding.homeApp11!!.setOnTouchListener(getViewSwipeTouchListener(context, binding.homeApp11!!))
+        binding.homeApp12!!.setOnTouchListener(getViewSwipeTouchListener(context, binding.homeApp12!!))
+        binding.homeApp13!!.setOnTouchListener(getViewSwipeTouchListener(context, binding.homeApp13!!))
+        binding.homeApp14!!.setOnTouchListener(getViewSwipeTouchListener(context, binding.homeApp14!!))
+        binding.homeApp15!!.setOnTouchListener(getViewSwipeTouchListener(context, binding.homeApp15!!))
+        binding.homeApp16!!.setOnTouchListener(getViewSwipeTouchListener(context, binding.homeApp16!!))
     }
 
     private fun initClickListeners() {
@@ -179,22 +258,22 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         val verticalGravity = if (prefs.homeBottomAlignment) Gravity.BOTTOM else Gravity.CENTER_VERTICAL
         binding.homeAppsLayout.gravity = horizontalGravity or verticalGravity
         binding.dateTimeLayout.gravity = horizontalGravity
-        binding.homeApp1.gravity = horizontalGravity
-        binding.homeApp2.gravity = horizontalGravity
-        binding.homeApp3.gravity = horizontalGravity
-        binding.homeApp4.gravity = horizontalGravity
-        binding.homeApp5.gravity = horizontalGravity
-        binding.homeApp6.gravity = horizontalGravity
-        binding.homeApp7.gravity = horizontalGravity
-        binding.homeApp8.gravity = horizontalGravity
-        binding.homeApp9.gravity = horizontalGravity
-        binding.homeApp10.gravity = horizontalGravity
-        binding.homeApp11.gravity = horizontalGravity
-        binding.homeApp12.gravity = horizontalGravity
-        binding.homeApp13.gravity = horizontalGravity
-        binding.homeApp14.gravity = horizontalGravity
-        binding.homeApp15.gravity = horizontalGravity
-        binding.homeApp16.gravity = horizontalGravity
+        binding.homeApp1!!.gravity = horizontalGravity
+        binding.homeApp2!!.gravity = horizontalGravity
+        binding.homeApp3!!.gravity = horizontalGravity
+        binding.homeApp4!!.gravity = horizontalGravity
+        binding.homeApp5!!.gravity = horizontalGravity
+        binding.homeApp6!!.gravity = horizontalGravity
+        binding.homeApp7!!.gravity = horizontalGravity
+        binding.homeApp8!!.gravity = horizontalGravity
+        binding.homeApp9!!.gravity = horizontalGravity
+        binding.homeApp10!!.gravity = horizontalGravity
+        binding.homeApp11!!.gravity = horizontalGravity
+        binding.homeApp12!!.gravity = horizontalGravity
+        binding.homeApp13!!.gravity = horizontalGravity
+        binding.homeApp14!!.gravity = horizontalGravity
+        binding.homeApp15!!.gravity = horizontalGravity
+        binding.homeApp16!!.gravity = horizontalGravity
     }
 
     private fun populateDateTime() {
@@ -218,113 +297,113 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         val homeAppsNum = prefs.homeAppsNum
         if (homeAppsNum == 0) return
 
-        binding.homeApp1.visibility = View.VISIBLE
-        if (!setHomeAppText(binding.homeApp1, prefs.appName1, prefs.appPackage1, prefs.appUser1)) {
+        binding.homeApp1!!.visibility = View.VISIBLE
+        if (!setHomeAppText(binding.homeApp1!!, prefs.appName1, prefs.appPackage1, prefs.appUser1)) {
             prefs.appName1 = ""
             prefs.appPackage1 = ""
         }
         if (homeAppsNum == 1) return
 
-        binding.homeApp2.visibility = View.VISIBLE
-        if (!setHomeAppText(binding.homeApp2, prefs.appName2, prefs.appPackage2, prefs.appUser2)) {
+        binding.homeApp2!!.visibility = View.VISIBLE
+        if (!setHomeAppText(binding.homeApp2!!, prefs.appName2, prefs.appPackage2, prefs.appUser2)) {
             prefs.appName2 = ""
             prefs.appPackage2 = ""
         }
         if (homeAppsNum == 2) return
 
-        binding.homeApp3.visibility = View.VISIBLE
-        if (!setHomeAppText(binding.homeApp3, prefs.appName3, prefs.appPackage3, prefs.appUser3)) {
+        binding.homeApp3!!.visibility = View.VISIBLE
+        if (!setHomeAppText(binding.homeApp3!!, prefs.appName3, prefs.appPackage3, prefs.appUser3)) {
             prefs.appName3 = ""
             prefs.appPackage3 = ""
         }
         if (homeAppsNum == 3) return
 
-        binding.homeApp4.visibility = View.VISIBLE
-        if (!setHomeAppText(binding.homeApp4, prefs.appName4, prefs.appPackage4, prefs.appUser4)) {
+        binding.homeApp4!!.visibility = View.VISIBLE
+        if (!setHomeAppText(binding.homeApp4!!, prefs.appName4, prefs.appPackage4, prefs.appUser4)) {
             prefs.appName4 = ""
             prefs.appPackage4 = ""
         }
         if (homeAppsNum == 4) return
 
-        binding.homeApp5.visibility = View.VISIBLE
-        if (!setHomeAppText(binding.homeApp5, prefs.appName5, prefs.appPackage5, prefs.appUser5)) {
+        binding.homeApp5!!.visibility = View.VISIBLE
+        if (!setHomeAppText(binding.homeApp5!!, prefs.appName5, prefs.appPackage5, prefs.appUser5)) {
             prefs.appName5 = ""
             prefs.appPackage5 = ""
         }
         if (homeAppsNum == 5) return
 
-        binding.homeApp6.visibility = View.VISIBLE
-        if (!setHomeAppText(binding.homeApp6, prefs.appName6, prefs.appPackage6, prefs.appUser6)) {
+        binding.homeApp6!!.visibility = View.VISIBLE
+        if (!setHomeAppText(binding.homeApp6!!, prefs.appName6, prefs.appPackage6, prefs.appUser6)) {
             prefs.appName6 = ""
             prefs.appPackage6 = ""
         }
         if (homeAppsNum == 6) return
 
-        binding.homeApp7.visibility = View.VISIBLE
-        if (!setHomeAppText(binding.homeApp7, prefs.appName7, prefs.appPackage7, prefs.appUser7)) {
+        binding.homeApp7!!.visibility = View.VISIBLE
+        if (!setHomeAppText(binding.homeApp7!!, prefs.appName7, prefs.appPackage7, prefs.appUser7)) {
             prefs.appName7 = ""
             prefs.appPackage7 = ""
         }
         if (homeAppsNum == 7) return
 
-        binding.homeApp8.visibility = View.VISIBLE
-        if (!setHomeAppText(binding.homeApp8, prefs.appName8, prefs.appPackage8, prefs.appUser8)) {
+        binding.homeApp8!!.visibility = View.VISIBLE
+        if (!setHomeAppText(binding.homeApp8!!, prefs.appName8, prefs.appPackage8, prefs.appUser8)) {
             prefs.appName8 = ""
             prefs.appPackage8 = ""
         }
         if (homeAppsNum == 8) return
 
-        binding.homeApp9.visibility = View.VISIBLE
-        if (!setHomeAppText(binding.homeApp9, prefs.appName9, prefs.appPackage9, prefs.appUser9)) {
+        binding.homeApp9!!.visibility = View.VISIBLE
+        if (!setHomeAppText(binding.homeApp9!!, prefs.appName9, prefs.appPackage9, prefs.appUser9)) {
             prefs.appName9 = ""
             prefs.appPackage9 = ""
         }
         if (homeAppsNum == 9) return
 
-        binding.homeApp10.visibility = View.VISIBLE
-        if (!setHomeAppText(binding.homeApp10, prefs.appName10, prefs.appPackage10, prefs.appUser10)) {
+        binding.homeApp10!!.visibility = View.VISIBLE
+        if (!setHomeAppText(binding.homeApp10!!, prefs.appName10, prefs.appPackage10, prefs.appUser10)) {
             prefs.appName10 = ""
             prefs.appPackage10 = ""
         }
         if (homeAppsNum == 10) return
 
-        binding.homeApp11.visibility = View.VISIBLE
-        if (!setHomeAppText(binding.homeApp11, prefs.appName11, prefs.appPackage11, prefs.appUser11)) {
+        binding.homeApp11!!.visibility = View.VISIBLE
+        if (!setHomeAppText(binding.homeApp11!!, prefs.appName11, prefs.appPackage11, prefs.appUser11)) {
             prefs.appName11 = ""
             prefs.appPackage11 = ""
         }
         if (homeAppsNum == 11) return
 
-        binding.homeApp12.visibility = View.VISIBLE
-        if (!setHomeAppText(binding.homeApp12, prefs.appName12, prefs.appPackage12, prefs.appUser12)) {
+        binding.homeApp12!!.visibility = View.VISIBLE
+        if (!setHomeAppText(binding.homeApp12!!, prefs.appName12, prefs.appPackage12, prefs.appUser12)) {
             prefs.appName12 = ""
             prefs.appPackage12 = ""
         }
         if (homeAppsNum == 12) return
 
-        binding.homeApp13.visibility = View.VISIBLE
-        if (!setHomeAppText(binding.homeApp13, prefs.appName13, prefs.appPackage13, prefs.appUser13)) {
+        binding.homeApp13!!.visibility = View.VISIBLE
+        if (!setHomeAppText(binding.homeApp13!!, prefs.appName13, prefs.appPackage13, prefs.appUser13)) {
             prefs.appName13 = ""
             prefs.appPackage13 = ""
         }
         if (homeAppsNum == 13) return
 
-        binding.homeApp14.visibility = View.VISIBLE
-        if (!setHomeAppText(binding.homeApp14, prefs.appName14, prefs.appPackage14, prefs.appUser14)) {
+        binding.homeApp14!!.visibility = View.VISIBLE
+        if (!setHomeAppText(binding.homeApp14!!, prefs.appName14, prefs.appPackage14, prefs.appUser14)) {
             prefs.appName14 = ""
             prefs.appPackage14 = ""
         }
         if (homeAppsNum == 14) return
 
-        binding.homeApp15.visibility = View.VISIBLE
-        if (!setHomeAppText(binding.homeApp15, prefs.appName15, prefs.appPackage15, prefs.appUser15)) {
+        binding.homeApp15!!.visibility = View.VISIBLE
+        if (!setHomeAppText(binding.homeApp15!!, prefs.appName15, prefs.appPackage15, prefs.appUser15)) {
             prefs.appName15 = ""
             prefs.appPackage15 = ""
         }
         if (homeAppsNum == 15) return
 
-        binding.homeApp16.visibility = View.VISIBLE
-        if (!setHomeAppText(binding.homeApp16, prefs.appName16, prefs.appPackage16, prefs.appUser16)) {
+        binding.homeApp16!!.visibility = View.VISIBLE
+        if (!setHomeAppText(binding.homeApp16!!, prefs.appName16, prefs.appPackage16, prefs.appUser16)) {
             prefs.appName16 = ""
             prefs.appPackage16 = ""
         }
@@ -340,22 +419,22 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
     }
 
     private fun hideHomeApps() {
-        binding.homeApp1.visibility = View.GONE
-        binding.homeApp2.visibility = View.GONE
-        binding.homeApp3.visibility = View.GONE
-        binding.homeApp4.visibility = View.GONE
-        binding.homeApp5.visibility = View.GONE
-        binding.homeApp6.visibility = View.GONE
-        binding.homeApp7.visibility = View.GONE
-        binding.homeApp8.visibility = View.GONE
-        binding.homeApp9.visibility = View.GONE
-        binding.homeApp10.visibility = View.GONE
-        binding.homeApp11.visibility = View.GONE
-        binding.homeApp12.visibility = View.GONE
-        binding.homeApp13.visibility = View.GONE
-        binding.homeApp14.visibility = View.GONE
-        binding.homeApp15.visibility = View.GONE
-        binding.homeApp16.visibility = View.GONE
+        binding.homeApp1!!.visibility = View.GONE
+        binding.homeApp2!!.visibility = View.GONE
+        binding.homeApp3!!.visibility = View.GONE
+        binding.homeApp4!!.visibility = View.GONE
+        binding.homeApp5!!.visibility = View.GONE
+        binding.homeApp6!!.visibility = View.GONE
+        binding.homeApp7!!.visibility = View.GONE
+        binding.homeApp8!!.visibility = View.GONE
+        binding.homeApp9!!.visibility = View.GONE
+        binding.homeApp10!!.visibility = View.GONE
+        binding.homeApp11!!.visibility = View.GONE
+        binding.homeApp12!!.visibility = View.GONE
+        binding.homeApp13!!.visibility = View.GONE
+        binding.homeApp14!!.visibility = View.GONE
+        binding.homeApp15!!.visibility = View.GONE
+        binding.homeApp16!!.visibility = View.GONE
     }
 
     private fun homeAppClicked(location: Int) {
@@ -564,6 +643,80 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
             override fun onClick(view: View) {
                 super.onClick(view)
                 textOnClick(view)
+            }
+        }
+    }
+
+    private fun onHomeAppClick(appNumber: Int) {
+        val packageName = when (appNumber) {
+            1 -> prefs.appPackage1!!
+            2 -> prefs.appPackage2!!
+            3 -> prefs.appPackage3!!
+            4 -> prefs.appPackage4!!
+            5 -> prefs.appPackage5!!
+            6 -> prefs.appPackage6!!
+            7 -> prefs.appPackage7!!
+            8 -> prefs.appPackage8!!
+            9 -> prefs.appPackage9!!
+            10 -> prefs.appPackage10!!
+            11 -> prefs.appPackage11!!
+            12 -> prefs.appPackage12!!
+            13 -> prefs.appPackage13!!
+            14 -> prefs.appPackage14!!
+            15 -> prefs.appPackage15!!
+            16 -> prefs.appPackage16!!
+            else -> return
+        }
+
+        val activityClass = when (appNumber) {
+            1 -> prefs.appActivityClassName1!!
+            2 -> prefs.appActivityClassName2!!
+            3 -> prefs.appActivityClassName3!!
+            4 -> prefs.appActivityClassName4!!
+            5 -> prefs.appActivityClassName5!!
+            6 -> prefs.appActivityClassName6!!
+            7 -> prefs.appActivityClassName7!!
+            8 -> prefs.appActivityClassName8!!
+            9 -> prefs.appActivityClassName9!!
+            10 -> prefs.appActivityClassName10!!
+            11 -> prefs.appActivityClassName11!!
+            12 -> prefs.appActivityClassName12!!
+            13 -> prefs.appActivityClassName13!!
+            14 -> prefs.appActivityClassName14!!
+            15 -> prefs.appActivityClassName15!!
+            16 -> prefs.appActivityClassName16!!
+            else -> return
+        }
+
+        val userId = when (appNumber) {
+            1 -> prefs.appUser1!!
+            2 -> prefs.appUser2!!
+            3 -> prefs.appUser3!!
+            4 -> prefs.appUser4!!
+            5 -> prefs.appUser5!!
+            6 -> prefs.appUser6!!
+            7 -> prefs.appUser7!!
+            8 -> prefs.appUser8!!
+            9 -> prefs.appUser9!!
+            10 -> prefs.appUser10!!
+            11 -> prefs.appUser11!!
+            12 -> prefs.appUser12!!
+            13 -> prefs.appUser13!!
+            14 -> prefs.appUser14!!
+            15 -> prefs.appUser15!!
+            16 -> prefs.appUser16!!
+            else -> return
+        }
+
+        if (packageName.isNotEmpty() && activityClass.isNotEmpty()) {
+            val intent = Intent().apply {
+                setClassName(packageName, activityClass)
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            }
+            try {
+                startActivity(intent)
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
     }

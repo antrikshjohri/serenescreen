@@ -64,9 +64,12 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="match_parent"
+        android:layout_marginTop="200dp"
+        android:layout_marginBottom="100dp"
         android:fillViewport="true"
+        android:clickable="true"
+        android:longClickable="true"
         android:scrollbars="none">
 
         <LinearLayout
@@ -86,6 +89,7 @@
                 android:hint="@string/app"
                 android:paddingVertical="@dimen/home_app_padding_vertical"
                 android:tag="@string/_1"
+                android:visibility="gone"
                 tools:visibility="visible" />
 
             <TextView
@@ -96,6 +100,7 @@
                 android:hint="@string/app"
                 android:paddingVertical="@dimen/home_app_padding_vertical"
                 android:tag="@string/_2"
+                android:visibility="gone"
                 tools:visibility="visible" />
 
             <TextView
@@ -106,6 +111,7 @@
                 android:hint="@string/app"
                 android:paddingVertical="@dimen/home_app_padding_vertical"
                 android:tag="@string/_3"
+                android:visibility="gone"
                 tools:visibility="visible" />
 
             <TextView
@@ -116,6 +122,7 @@
                 android:hint="@string/app"
                 android:paddingVertical="@dimen/home_app_padding_vertical"
                 android:tag="@string/_4"
+                android:visibility="gone"
                 tools:visibility="visible" />
 
             <TextView
@@ -126,6 +133,7 @@
                 android:hint="@string/app"
                 android:paddingVertical="@dimen/home_app_padding_vertical"
                 android:tag="@string/_5"
+                android:visibility="gone"
                 tools:visibility="visible" />
 
             <TextView
@@ -136,6 +144,7 @@
                 android:hint="@string/app"
                 android:paddingVertical="@dimen/home_app_padding_vertical"
                 android:tag="@string/_6"
+                android:visibility="gone"
                 tools:visibility="visible" />
 
             <TextView
@@ -146,6 +155,7 @@
                 android:hint="@string/app"
                 android:paddingVertical="@dimen/home_app_padding_vertical"
                 android:tag="@string/_7"
+                android:visibility="gone"
                 tools:visibility="visible" />
 
             <TextView
@@ -156,6 +166,7 @@
                 android:hint="@string/app"
                 android:paddingVertical="@dimen/home_app_padding_vertical"
                 android:tag="@string/_8"
+                android:visibility="gone"
                 tools:visibility="visible" />
 
             <TextView
@@ -166,6 +177,7 @@
                 android:hint="@string/app"
                 android:paddingVertical="@dimen/home_app_padding_vertical"
                 android:tag="@string/_9"
+                android:visibility="gone"
                 tools:visibility="visible" />
 
             <TextView
@@ -176,6 +188,7 @@
                 android:hint="@string/app"
                 android:paddingVertical="@dimen/home_app_padding_vertical"
                 android:tag="@string/_10"
+                android:visibility="gone"
                 tools:visibility="visible" />
 
             <TextView
@@ -186,6 +199,7 @@
                 android:hint="@string/app"
                 android:paddingVertical="@dimen/home_app_padding_vertical"
                 android:tag="@string/_11"
+                android:visibility="gone"
                 tools:visibility="visible" />
 
             <TextView
@@ -196,6 +210,7 @@
                 android:hint="@string/app"
                 android:paddingVertical="@dimen/home_app_padding_vertical"
                 android:tag="@string/_12"
+                android:visibility="gone"
                 tools:visibility="visible" />
 
             <TextView
@@ -206,6 +221,7 @@
                 android:hint="@string/app"
                 android:paddingVertical="@dimen/home_app_padding_vertical"
                 android:tag="@string/_13"
+                android:visibility="gone"
                 tools:visibility="visible" />
 
             <TextView
@@ -216,6 +232,7 @@
                 android:hint="@string/app"
                 android:paddingVertical="@dimen/home_app_padding_vertical"
                 android:tag="@string/_14"
+                android:visibility="gone"
                 tools:visibility="visible" />
 
             <TextView
@@ -226,6 +243,7 @@
                 android:hint="@string/app"
                 android:paddingVertical="@dimen/home_app_padding_vertical"
                 android:tag="@string/_15"
+                android:visibility="gone"
                 tools:visibility="visible" />
 
             <TextView
@@ -236,6 +254,7 @@
                 android:hint="@string/app"
                 android:paddingVertical="@dimen/home_app_padding_vertical"
                 android:tag="@string/_16"
+                android:visibility="gone"
                 tools:visibility="visible" />
 
         </LinearLayout>

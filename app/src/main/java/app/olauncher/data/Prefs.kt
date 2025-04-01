@@ -145,7 +145,7 @@ class Prefs(context: Context) {
         set(value) = prefs.edit().putString(DAILY_WALLPAPER_URL, value).apply()
 
     var homeAppsNum: Int
-        get() = prefs.getInt(HOME_APPS_NUM, 16)
+        get() = prefs.getInt(HOME_APPS_NUM, 8)
         set(value) = prefs.edit().putInt(HOME_APPS_NUM, value).apply()
 
     var homeAlignment: Int
@@ -344,68 +344,68 @@ class Prefs(context: Context) {
         get() = prefs.getString(APP_PACKAGE_16, "").toString()
         set(value) = prefs.edit().putString(APP_PACKAGE_16, value).apply()
 
-    var appActivityClassName1: String?
+    var appActivityClassName1: String
         get() = prefs.getString(APP_ACTIVITY_CLASS_NAME_1, "").toString()
         set(value) = prefs.edit().putString(APP_ACTIVITY_CLASS_NAME_1, value).apply()
 
-    var appActivityClassName2: String?
+    var appActivityClassName2: String
         get() = prefs.getString(APP_ACTIVITY_CLASS_NAME_2, "").toString()
         set(value) = prefs.edit().putString(APP_ACTIVITY_CLASS_NAME_2, value).apply()
 
-    var appActivityClassName3: String?
+    var appActivityClassName3: String
         get() = prefs.getString(APP_ACTIVITY_CLASS_NAME_3, "").toString()
         set(value) = prefs.edit().putString(APP_ACTIVITY_CLASS_NAME_3, value).apply()
 
-    var appActivityClassName4: String?
+    var appActivityClassName4: String
         get() = prefs.getString(APP_ACTIVITY_CLASS_NAME_4, "").toString()
         set(value) = prefs.edit().putString(APP_ACTIVITY_CLASS_NAME_4, value).apply()
 
-    var appActivityClassName5: String?
+    var appActivityClassName5: String
         get() = prefs.getString(APP_ACTIVITY_CLASS_NAME_5, "").toString()
         set(value) = prefs.edit().putString(APP_ACTIVITY_CLASS_NAME_5, value).apply()
 
-    var appActivityClassName6: String?
+    var appActivityClassName6: String
         get() = prefs.getString(APP_ACTIVITY_CLASS_NAME_6, "").toString()
         set(value) = prefs.edit().putString(APP_ACTIVITY_CLASS_NAME_6, value).apply()
 
-    var appActivityClassName7: String?
+    var appActivityClassName7: String
         get() = prefs.getString(APP_ACTIVITY_CLASS_NAME_7, "").toString()
         set(value) = prefs.edit().putString(APP_ACTIVITY_CLASS_NAME_7, value).apply()
 
-    var appActivityClassName8: String?
+    var appActivityClassName8: String
         get() = prefs.getString(APP_ACTIVITY_CLASS_NAME_8, "").toString()
         set(value) = prefs.edit().putString(APP_ACTIVITY_CLASS_NAME_8, value).apply()
 
-    var appActivityClassName9: String?
-        get() = prefs.getString(APP_ACTIVITY_CLASS_NAME_9, null)
+    var appActivityClassName9: String
+        get() = prefs.getString(APP_ACTIVITY_CLASS_NAME_9, "").toString()
         set(value) = prefs.edit().putString(APP_ACTIVITY_CLASS_NAME_9, value).apply()
 
-    var appActivityClassName10: String?
-        get() = prefs.getString(APP_ACTIVITY_CLASS_NAME_10, null)
+    var appActivityClassName10: String
+        get() = prefs.getString(APP_ACTIVITY_CLASS_NAME_10, "").toString()
         set(value) = prefs.edit().putString(APP_ACTIVITY_CLASS_NAME_10, value).apply()
 
-    var appActivityClassName11: String?
-        get() = prefs.getString(APP_ACTIVITY_CLASS_NAME_11, null)
+    var appActivityClassName11: String
+        get() = prefs.getString(APP_ACTIVITY_CLASS_NAME_11, "").toString()
         set(value) = prefs.edit().putString(APP_ACTIVITY_CLASS_NAME_11, value).apply()
 
-    var appActivityClassName12: String?
-        get() = prefs.getString(APP_ACTIVITY_CLASS_NAME_12, null)
+    var appActivityClassName12: String
+        get() = prefs.getString(APP_ACTIVITY_CLASS_NAME_12, "").toString()
         set(value) = prefs.edit().putString(APP_ACTIVITY_CLASS_NAME_12, value).apply()
 
-    var appActivityClassName13: String?
-        get() = prefs.getString(APP_ACTIVITY_CLASS_NAME_13, null)
+    var appActivityClassName13: String
+        get() = prefs.getString(APP_ACTIVITY_CLASS_NAME_13, "").toString()
         set(value) = prefs.edit().putString(APP_ACTIVITY_CLASS_NAME_13, value).apply()
 
-    var appActivityClassName14: String?
-        get() = prefs.getString(APP_ACTIVITY_CLASS_NAME_14, null)
+    var appActivityClassName14: String
+        get() = prefs.getString(APP_ACTIVITY_CLASS_NAME_14, "").toString()
         set(value) = prefs.edit().putString(APP_ACTIVITY_CLASS_NAME_14, value).apply()
 
-    var appActivityClassName15: String?
-        get() = prefs.getString(APP_ACTIVITY_CLASS_NAME_15, null)
+    var appActivityClassName15: String
+        get() = prefs.getString(APP_ACTIVITY_CLASS_NAME_15, "").toString()
         set(value) = prefs.edit().putString(APP_ACTIVITY_CLASS_NAME_15, value).apply()
 
-    var appActivityClassName16: String?
-        get() = prefs.getString(APP_ACTIVITY_CLASS_NAME_16, null)
+    var appActivityClassName16: String
+        get() = prefs.getString(APP_ACTIVITY_CLASS_NAME_16, "").toString()
         set(value) = prefs.edit().putString(APP_ACTIVITY_CLASS_NAME_16, value).apply()
 
     var appUser1: String

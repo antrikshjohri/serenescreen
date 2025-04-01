@@ -91,7 +91,17 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
             R.id.setLauncher -> viewModel.resetDefaultLauncherApp(requireContext())
             R.id.toggleLock -> toggleLockMode()
             R.id.autoShowKeyboard -> toggleKeyboardText()
-            R.id.homeAppsNum -> binding.appsNumSelectLayout.visibility = View.VISIBLE
+            R.id.homeAppsNum -> {
+                binding.appsNumSelectLayout.visibility = View.VISIBLE
+                binding.appsNumSelectLayout.alpha = 0f
+                binding.appsNumSelectLayout.translationY = -20f
+                binding.appsNumSelectLayout.animate()
+                    .alpha(1f)
+                    .translationY(0f)
+                    .setDuration(200)
+                    .setInterpolator(android.view.animation.AccelerateDecelerateInterpolator())
+                    .start()
+            }
             R.id.dailyWallpaperUrl -> requireContext().openUrl(prefs.dailyWallpaperUrl)
             R.id.dailyWallpaper -> toggleDailyWallpaperUpdate()
             R.id.alignment -> binding.alignmentSelectLayout.visibility = View.VISIBLE
@@ -122,6 +132,14 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
             R.id.maxApps6 -> updateHomeAppsNum(6)
             R.id.maxApps7 -> updateHomeAppsNum(7)
             R.id.maxApps8 -> updateHomeAppsNum(8)
+            R.id.maxApps9 -> updateHomeAppsNum(9)
+            R.id.maxApps10 -> updateHomeAppsNum(10)
+            R.id.maxApps11 -> updateHomeAppsNum(11)
+            R.id.maxApps12 -> updateHomeAppsNum(12)
+            R.id.maxApps13 -> updateHomeAppsNum(13)
+            R.id.maxApps14 -> updateHomeAppsNum(14)
+            R.id.maxApps15 -> updateHomeAppsNum(15)
+            R.id.maxApps16 -> updateHomeAppsNum(16)
 
             R.id.textSize1 -> updateTextSizeScale(Constants.TextSize.ONE)
             R.id.textSize2 -> updateTextSizeScale(Constants.TextSize.TWO)
@@ -216,6 +234,14 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         binding.maxApps6.setOnClickListener(this)
         binding.maxApps7.setOnClickListener(this)
         binding.maxApps8.setOnClickListener(this)
+        binding.maxApps9.setOnClickListener(this)
+        binding.maxApps10.setOnClickListener(this)
+        binding.maxApps11.setOnClickListener(this)
+        binding.maxApps12.setOnClickListener(this)
+        binding.maxApps13.setOnClickListener(this)
+        binding.maxApps14.setOnClickListener(this)
+        binding.maxApps15.setOnClickListener(this)
+        binding.maxApps16.setOnClickListener(this)
 
         binding.textSize1.setOnClickListener(this)
         binding.textSize2.setOnClickListener(this)
@@ -419,10 +445,17 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
     }
 
     private fun updateHomeAppsNum(num: Int) {
-        binding.homeAppsNum.text = num.toString()
-        binding.appsNumSelectLayout.visibility = View.GONE
         prefs.homeAppsNum = num
-        viewModel.refreshHome(true)
+        binding.homeAppsNum.text = num.toString()
+        binding.appsNumSelectLayout.animate()
+            .alpha(0f)
+            .translationY(-20f)
+            .setDuration(200)
+            .setInterpolator(android.view.animation.AccelerateDecelerateInterpolator())
+            .withEndAction {
+                binding.appsNumSelectLayout.visibility = View.GONE
+            }
+            .start()
     }
 
     private fun updateTextSizeScale(sizeScale: Float) {
