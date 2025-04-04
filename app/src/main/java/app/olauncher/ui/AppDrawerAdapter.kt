@@ -51,8 +51,9 @@ class AppDrawerAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         try {
-            if (appFilteredList.size == 0) return
-            val appModel = appFilteredList[holder.bindingAdapterPosition]
+            val position = holder.bindingAdapterPosition
+            if (position == RecyclerView.NO_POSITION || position >= appFilteredList.size) return
+            val appModel = appFilteredList[position]
             holder.bind(
                 flag,
                 appLabelGravity,
