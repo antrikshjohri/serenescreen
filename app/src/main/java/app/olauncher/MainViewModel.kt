@@ -47,70 +47,126 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 prefs.appName1 = appModel.appLabel
                 prefs.appPackage1 = appModel.appPackage
                 prefs.appUser1 = appModel.user.toString()
-                prefs.appActivityClassName1 = appModel.activityClassName
+                prefs.appActivityClassName1 = appModel.activityClassName.toString()
                 refreshHome(false)
             }
             Constants.FLAG_SET_HOME_APP_2 -> {
                 prefs.appName2 = appModel.appLabel
                 prefs.appPackage2 = appModel.appPackage
                 prefs.appUser2 = appModel.user.toString()
-                prefs.appActivityClassName2 = appModel.activityClassName
+                prefs.appActivityClassName2 = appModel.activityClassName.toString()
                 refreshHome(false)
             }
             Constants.FLAG_SET_HOME_APP_3 -> {
                 prefs.appName3 = appModel.appLabel
                 prefs.appPackage3 = appModel.appPackage
                 prefs.appUser3 = appModel.user.toString()
-                prefs.appActivityClassName3 = appModel.activityClassName
+                prefs.appActivityClassName3 = appModel.activityClassName.toString()
                 refreshHome(false)
             }
             Constants.FLAG_SET_HOME_APP_4 -> {
                 prefs.appName4 = appModel.appLabel
                 prefs.appPackage4 = appModel.appPackage
                 prefs.appUser4 = appModel.user.toString()
-                prefs.appActivityClassName4 = appModel.activityClassName
+                prefs.appActivityClassName4 = appModel.activityClassName.toString()
                 refreshHome(false)
             }
             Constants.FLAG_SET_HOME_APP_5 -> {
                 prefs.appName5 = appModel.appLabel
                 prefs.appPackage5 = appModel.appPackage
                 prefs.appUser5 = appModel.user.toString()
-                prefs.appActivityClassName5 = appModel.activityClassName
+                prefs.appActivityClassName5 = appModel.activityClassName.toString()
                 refreshHome(false)
             }
             Constants.FLAG_SET_HOME_APP_6 -> {
                 prefs.appName6 = appModel.appLabel
                 prefs.appPackage6 = appModel.appPackage
                 prefs.appUser6 = appModel.user.toString()
-                prefs.appActivityClassName6 = appModel.activityClassName
+                prefs.appActivityClassName6 = appModel.activityClassName.toString()
                 refreshHome(false)
             }
             Constants.FLAG_SET_HOME_APP_7 -> {
                 prefs.appName7 = appModel.appLabel
                 prefs.appPackage7 = appModel.appPackage
                 prefs.appUser7 = appModel.user.toString()
-                prefs.appActivityClassName7 = appModel.activityClassName
+                prefs.appActivityClassName7 = appModel.activityClassName.toString()
                 refreshHome(false)
             }
             Constants.FLAG_SET_HOME_APP_8 -> {
                 prefs.appName8 = appModel.appLabel
                 prefs.appPackage8 = appModel.appPackage
                 prefs.appUser8 = appModel.user.toString()
-                prefs.appActivityClassName8 = appModel.activityClassName
+                prefs.appActivityClassName8 = appModel.activityClassName.toString()
+                refreshHome(false)
+            }
+            Constants.FLAG_SET_HOME_APP_9 -> {
+                prefs.appName9 = appModel.appLabel
+                prefs.appPackage9 = appModel.appPackage
+                prefs.appUser9 = appModel.user.toString()
+                prefs.appActivityClassName9 = appModel.activityClassName.toString()
+                refreshHome(false)
+            }
+            Constants.FLAG_SET_HOME_APP_10 -> {
+                prefs.appName10 = appModel.appLabel
+                prefs.appPackage10 = appModel.appPackage
+                prefs.appUser10 = appModel.user.toString()
+                prefs.appActivityClassName10 = appModel.activityClassName.toString()
+                refreshHome(false)
+            }
+            Constants.FLAG_SET_HOME_APP_11 -> {
+                prefs.appName11 = appModel.appLabel
+                prefs.appPackage11 = appModel.appPackage
+                prefs.appUser11 = appModel.user.toString()
+                prefs.appActivityClassName11 = appModel.activityClassName.toString()
+                refreshHome(false)
+            }
+            Constants.FLAG_SET_HOME_APP_12 -> {
+                prefs.appName12 = appModel.appLabel
+                prefs.appPackage12 = appModel.appPackage
+                prefs.appUser12 = appModel.user.toString()
+                prefs.appActivityClassName12 = appModel.activityClassName.toString()
+                refreshHome(false)
+            }
+            Constants.FLAG_SET_HOME_APP_13 -> {
+                prefs.appName13 = appModel.appLabel
+                prefs.appPackage13 = appModel.appPackage
+                prefs.appUser13 = appModel.user.toString()
+                prefs.appActivityClassName13 = appModel.activityClassName.toString()
+                refreshHome(false)
+            }
+            Constants.FLAG_SET_HOME_APP_14 -> {
+                prefs.appName14 = appModel.appLabel
+                prefs.appPackage14 = appModel.appPackage
+                prefs.appUser14 = appModel.user.toString()
+                prefs.appActivityClassName14 = appModel.activityClassName.toString()
+                refreshHome(false)
+            }
+            Constants.FLAG_SET_HOME_APP_15 -> {
+                prefs.appName15 = appModel.appLabel
+                prefs.appPackage15 = appModel.appPackage
+                prefs.appUser15 = appModel.user.toString()
+                prefs.appActivityClassName15 = appModel.activityClassName.toString()
+                refreshHome(false)
+            }
+            Constants.FLAG_SET_HOME_APP_16 -> {
+                prefs.appName16 = appModel.appLabel
+                prefs.appPackage16 = appModel.appPackage
+                prefs.appUser16 = appModel.user.toString()
+                prefs.appActivityClassName16 = appModel.activityClassName.toString()
                 refreshHome(false)
             }
             Constants.FLAG_SET_SWIPE_LEFT_APP -> {
                 prefs.appNameSwipeLeft = appModel.appLabel
                 prefs.appPackageSwipeLeft = appModel.appPackage
                 prefs.appUserSwipeLeft = appModel.user.toString()
-                prefs.appActivityClassNameSwipeLeft = appModel.activityClassName
+                prefs.appActivityClassNameSwipeLeft = appModel.activityClassName.toString()
                 updateSwipeApps()
             }
             Constants.FLAG_SET_SWIPE_RIGHT_APP -> {
                 prefs.appNameSwipeRight = appModel.appLabel
                 prefs.appPackageSwipeRight = appModel.appPackage
                 prefs.appUserSwipeRight = appModel.user.toString()
-                prefs.appActivityClassNameRight = appModel.activityClassName
+                prefs.appActivityClassNameRight = appModel.activityClassName.toString()
                 updateSwipeApps()
             }
         }
