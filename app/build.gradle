@@ -4,7 +4,7 @@ apply plugin: 'com.google.gms.google-services'
 
 android {
     //compileSdkVersion 33
-    compileSdk 34
+    compileSdk 35
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -18,8 +18,8 @@ android {
     defaultConfig {
         applicationId "app.serenescreen"
         minSdkVersion 23
-        targetSdkVersion 34
-        versionCode 71
+        targetSdkVersion 35
+        versionCode 73
         versionName "v5.2.3"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
