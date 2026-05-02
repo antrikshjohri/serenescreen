@@ -10,9 +10,13 @@ import android.os.Bundle
 import android.provider.Settings
 import android.view.*
 import android.widget.Toast
+import android.view.View
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -74,6 +78,7 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         populateActionHints()
         initClickListeners()
         initObservers()
+        applyWindowInsets()
     }
 
     override fun onClick(view: View) {
@@ -275,6 +280,30 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         viewModel.updateSwipeApps.observe(viewLifecycleOwner) {
             populateSwipeApps()
         }
+    }
+
+    private fun applyWindowInsets() {
+        val currentBinding = _binding ?: return
+        val contentView = currentBinding.root.findViewById<View>(R.id.settingsContent) ?: currentBinding.scrollLayout
+        val initialScrollTop = currentBinding.scrollLayout.paddingTop
+        val initialContentBottom = contentView.paddingBottom
+
+        ViewCompat.setOnApplyWindowInsetsListener(currentBinding.mainActivityLayout) { _, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+
+            currentBinding.scrollLayout.updatePadding(
+                top = initialScrollTop + systemBars.top
+            )
+            contentView.updatePadding(
+                bottom = initialContentBottom + systemBars.bottom + dpToPx(24)
+            )
+
+            insets
+        }
+    }
+
+    private fun dpToPx(dp: Int): Int {
+        return (dp * resources.displayMetrics.density).toInt()
     }
 
     private fun toggleSwipeLeft() {

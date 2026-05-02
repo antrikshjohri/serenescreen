@@ -16,12 +16,14 @@
         android:background="?attr/primaryShadeDarkColor"
         android:clipChildren="false"
         android:clipToPadding="false"
+        android:fillViewport="true"
         android:fadingEdgeLength="48dp"
         android:overScrollMode="never"
         android:requiresFadingEdge="vertical"
         android:scrollbars="none">
 
         <LinearLayout
+            android:id="@+id/settingsContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"

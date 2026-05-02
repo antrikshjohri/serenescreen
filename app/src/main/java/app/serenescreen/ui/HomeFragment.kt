@@ -8,10 +8,12 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Vibrator
 import android.view.*
+import android.view.ViewGroup.MarginLayoutParams
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.os.bundleOf
+import androidx.core.view.doOnLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -139,6 +141,7 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         setHomeAlignment(prefs.homeAlignment)
         initSwipeTouchListener()
         initClickListeners()
+        binding.root.doOnLayout { updateHomeScrollSpacing() }
     }
 
     override fun onResume() {
@@ -147,6 +150,7 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         viewModel.isSereneScreenDefault()
         if (prefs.showStatusBar) showStatusBar()
         else hideStatusBar()
+        binding.root.post { updateHomeScrollSpacing() }
     }
 
     override fun onClick(view: View) {
@@ -215,6 +219,7 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
             if (binding.firstRunTips.visibility == View.VISIBLE) return@Observer
             if (it) binding.setDefaultLauncher.visibility = View.GONE
             else binding.setDefaultLauncher.visibility = View.VISIBLE
+            binding.root.post { updateHomeScrollSpacing() }
         })
         viewModel.homeAppAlignment.observe(viewLifecycleOwner) {
             setHomeAlignment(it)
@@ -255,7 +260,13 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
     }
 
     private fun setHomeAlignment(horizontalGravity: Int = prefs.homeAlignment) {
-        val verticalGravity = if (prefs.homeBottomAlignment) Gravity.BOTTOM else Gravity.CENTER_VERTICAL
+        val verticalGravity = when {
+            prefs.homeBottomAlignment -> Gravity.BOTTOM
+            // In portrait the home apps sit inside a ScrollView; centering that child
+            // makes the list drift too far down on taller phones.
+            binding.homeAppsLayout.parent is ScrollView -> Gravity.TOP
+            else -> Gravity.CENTER_VERTICAL
+        }
         binding.homeAppsLayout.gravity = horizontalGravity or verticalGravity
         binding.dateTimeLayout.gravity = horizontalGravity
         binding.homeApp1!!.gravity = horizontalGravity
@@ -274,6 +285,24 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         binding.homeApp14!!.gravity = horizontalGravity
         binding.homeApp15!!.gravity = horizontalGravity
         binding.homeApp16!!.gravity = horizontalGravity
+    }
+
+    private fun updateHomeScrollSpacing() {
+        val scrollView = _binding?.scrollView ?: return
+        val compactAdjustmentDp = ((980 - resources.configuration.screenHeightDp).coerceAtLeast(0) / 4)
+            .coerceAtMost(28)
+        val targetTopMargin = dpToPx(200 + compactAdjustmentDp)
+        val targetBottomMargin = dpToPx(if (binding.setDefaultLauncher.isVisible || binding.firstRunTips.isVisible) 100 else 48)
+
+        (scrollView.layoutParams as? MarginLayoutParams)?.let { layoutParams ->
+            layoutParams.topMargin = targetTopMargin
+            layoutParams.bottomMargin = targetBottomMargin
+            scrollView.layoutParams = layoutParams
+        }
+    }
+
+    private fun dpToPx(dp: Int): Int {
+        return (dp * resources.displayMetrics.density).toInt()
     }
 
     private fun populateDateTime() {

@@ -15,6 +15,7 @@
         android:background="?attr/primaryShadeDarkColor"
         android:clipChildren="false"
         android:clipToPadding="false"
+        android:fillViewport="true"
         android:fadingEdgeLength="24dp"
         android:overScrollMode="never"
         android:paddingHorizontal="72dp"
