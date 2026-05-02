@@ -104,7 +104,7 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
             R.id.appInfo -> openAppInfo(requireContext(), android.os.Process.myUserHandle(), BuildConfig.APPLICATION_ID)
             R.id.setLauncher, R.id.setLauncherRow -> viewModel.resetDefaultLauncherApp(requireContext())
             R.id.toggleLock -> toggleLockMode()
-            R.id.autoShowKeyboard, R.id.autoShowKeyboardRow -> toggleKeyboardText()
+            R.id.autoShowKeyboardSwitch, R.id.autoShowKeyboardRow -> toggleKeyboardText()
             R.id.homeAppsNum, R.id.homeAppsNumRow -> {
                 showHomeAppsSelector()
             }
@@ -115,8 +115,9 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
             R.id.alignmentCenter -> viewModel.updateHomeAlignment(Gravity.CENTER)
             R.id.alignmentRight -> viewModel.updateHomeAlignment(Gravity.END)
             R.id.alignmentBottom -> updateHomeBottomAlignment()
-            R.id.statusBar, R.id.statusBarRow -> toggleStatusBar()
-            R.id.dateTime, R.id.dateTimeRow -> showDateTimeDialog()
+            R.id.statusBarSwitch, R.id.statusBarRow -> toggleStatusBar()
+            R.id.dateTimeRow, R.id.dateTimeMode -> showDateTimeModeDialog()
+            R.id.dateTimeSwitch -> toggleDateTimeEnabled()
             R.id.dateTimeOn -> toggleDateTime(Constants.DateTime.ON)
             R.id.dateTimeOff -> toggleDateTime(Constants.DateTime.OFF)
             R.id.dateOnly -> toggleDateTime(Constants.DateTime.DATE_ONLY)
@@ -183,7 +184,7 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         binding.appInfo.setOnClickListener(this)
         binding.setLauncher.setOnClickListener(this)
         binding.root.findViewById<View>(R.id.setLauncherRow)?.setOnClickListener(this)
-        binding.autoShowKeyboard.setOnClickListener(this)
+        binding.autoShowKeyboardSwitch?.setOnClickListener(this)
         binding.root.findViewById<View>(R.id.autoShowKeyboardRow)?.setOnClickListener(this)
         //binding.toggleLock.setOnClickListener(this)
         binding.homeAppsNum.setOnClickListener(this)
@@ -196,9 +197,10 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         binding.alignmentCenter.setOnClickListener(this)
         binding.alignmentRight.setOnClickListener(this)
         binding.alignmentBottom.setOnClickListener(this)
-        binding.statusBar.setOnClickListener(this)
+        binding.statusBarSwitch?.setOnClickListener(this)
         binding.root.findViewById<View>(R.id.statusBarRow)?.setOnClickListener(this)
-        binding.dateTime.setOnClickListener(this)
+        binding.dateTimeSwitch?.setOnClickListener(this)
+        binding.dateTimeMode?.setOnClickListener(this)
         binding.root.findViewById<View>(R.id.dateTimeRow)?.setOnClickListener(this)
         binding.dateTimeOn.setOnClickListener(this)
         binding.dateTimeOff.setOnClickListener(this)
@@ -303,23 +305,40 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
     }
 
     private fun showTextSizeDialog() {
-        val labels = arrayOf("1", "2", "3", "4", "5", "6", "7")
-        val values = floatArrayOf(
-            Constants.TextSize.ONE,
-            Constants.TextSize.TWO,
-            Constants.TextSize.THREE,
-            Constants.TextSize.FOUR,
-            Constants.TextSize.FIVE,
-            Constants.TextSize.SIX,
-            Constants.TextSize.SEVEN
-        )
-        val selectedIndex = values.indexOfFirst { it == prefs.textSizeScale }.coerceAtLeast(0)
-        MaterialAlertDialogBuilder(requireContext())
+        val context = requireContext()
+        val container = android.widget.LinearLayout(context).apply {
+            orientation = android.widget.LinearLayout.VERTICAL
+            setPadding(dpToPx(24), dpToPx(12), dpToPx(24), 0)
+        }
+        val valueLabel = android.widget.TextView(context).apply {
+            text = getTextSizeStep().toString()
+            setTextColor(context.getColorFromAttr(R.attr.primaryColor))
+            textSize = 16f
+        }
+        var selectedStep = getTextSizeStep()
+        val slider = Slider(context).apply {
+            valueFrom = 1f
+            valueTo = 7f
+            stepSize = 1f
+            value = selectedStep.toFloat()
+            setLabelFormatter { value -> value.toInt().toString() }
+            setLabelBehavior(SLIDER_LABEL_VISIBLE)
+            addOnChangeListener { _, value, fromUser ->
+                if (!fromUser) return@addOnChangeListener
+                selectedStep = value.toInt()
+                valueLabel.text = selectedStep.toString()
+            }
+        }
+        container.addView(valueLabel)
+        container.addView(slider)
+        MaterialAlertDialogBuilder(context)
             .setTitle(R.string.text_size)
-            .setSingleChoiceItems(labels, selectedIndex) { dialog, which ->
-                updateTextSizeScale(values[which])
+            .setView(container)
+            .setPositiveButton(android.R.string.ok) { dialog, _ ->
+                updateTextSizeScale(getTextSizeScaleForStep(selectedStep))
                 dialog.dismiss()
             }
+            .setNegativeButton(android.R.string.cancel, null)
             .show()
     }
 
@@ -344,18 +363,16 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
             .show()
     }
 
-    private fun showDateTimeDialog() {
+    private fun showDateTimeModeDialog() {
         val labels = arrayOf(
-            getString(R.string.on),
-            getString(R.string.off),
+            getString(R.string.date_time_full),
             getString(R.string.date_only)
         )
         val values = intArrayOf(
             Constants.DateTime.ON,
-            Constants.DateTime.OFF,
             Constants.DateTime.DATE_ONLY
         )
-        val selectedIndex = values.indexOf(prefs.dateTimeVisibility).coerceAtLeast(0)
+        val selectedIndex = values.indexOf(getSelectedDateTimeMode()).coerceAtLeast(0)
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.show_date_time_amp)
             .setSingleChoiceItems(labels, selectedIndex) { dialog, which ->
@@ -479,25 +496,44 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
     private fun populateStatusBar() {
         if (prefs.showStatusBar) {
             showStatusBar()
-            binding.statusBar.text = getString(R.string.on)
         } else {
             hideStatusBar()
-            binding.statusBar.text = getString(R.string.off)
         }
+        binding.statusBarSwitch?.isChecked = prefs.showStatusBar
     }
 
     private fun toggleDateTime(selected: Int) {
         prefs.dateTimeVisibility = selected
+        if (selected != Constants.DateTime.OFF) {
+            prefs.dateTimeLastVisibleMode = selected
+        }
         populateDateTime()
         viewModel.toggleDateTime()
     }
 
+    private fun toggleDateTimeEnabled() {
+        val nextVisibility = if (prefs.dateTimeVisibility == Constants.DateTime.OFF) {
+            getSelectedDateTimeMode()
+        } else {
+            Constants.DateTime.OFF
+        }
+        toggleDateTime(nextVisibility)
+    }
+
+    private fun getSelectedDateTimeMode(): Int {
+        return if (prefs.dateTimeVisibility == Constants.DateTime.OFF) {
+            prefs.dateTimeLastVisibleMode
+        } else {
+            prefs.dateTimeVisibility
+        }
+    }
+
     private fun populateDateTime() {
-        binding.dateTime.text = getString(
-            when (prefs.dateTimeVisibility) {
-                Constants.DateTime.DATE_ONLY -> R.string.date
-                Constants.DateTime.ON -> R.string.on
-                else -> R.string.off
+        binding.dateTimeSwitch?.isChecked = prefs.dateTimeVisibility != Constants.DateTime.OFF
+        binding.dateTimeMode?.text = getString(
+            when (getSelectedDateTimeMode()) {
+                Constants.DateTime.DATE_ONLY -> R.string.date_only
+                else -> R.string.date_time_full
             }
         )
     }
@@ -692,7 +728,11 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
     }
 
     private fun populateTextSize() {
-        binding.textSizeValue.text = when (prefs.textSizeScale) {
+        binding.textSizeValue.text = getTextSizeStep().toString()
+    }
+
+    private fun getTextSizeStep(): Int {
+        return when (prefs.textSizeScale) {
             Constants.TextSize.TWO -> 2
             Constants.TextSize.THREE -> 3
             Constants.TextSize.FOUR -> 4
@@ -700,12 +740,23 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
             Constants.TextSize.SIX -> 6
             Constants.TextSize.SEVEN -> 7
             else -> 1
-        }.toString()
+        }
+    }
+
+    private fun getTextSizeScaleForStep(step: Int): Float {
+        return when (step) {
+            2 -> Constants.TextSize.TWO
+            3 -> Constants.TextSize.THREE
+            4 -> Constants.TextSize.FOUR
+            5 -> Constants.TextSize.FIVE
+            6 -> Constants.TextSize.SIX
+            7 -> Constants.TextSize.SEVEN
+            else -> Constants.TextSize.ONE
+        }
     }
 
     private fun populateKeyboardText() {
-        if (prefs.autoShowKeyboard) binding.autoShowKeyboard.text = getString(R.string.on)
-        else binding.autoShowKeyboard.text = getString(R.string.off)
+        binding.autoShowKeyboardSwitch?.isChecked = prefs.autoShowKeyboard
     }
 
     /*private fun populateWallpaperText() {

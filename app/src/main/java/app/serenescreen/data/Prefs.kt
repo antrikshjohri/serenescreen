@@ -23,6 +23,7 @@ class Prefs(context: Context) {
     private val APP_LABEL_ALIGNMENT = "APP_LABEL_ALIGNMENT"
     private val STATUS_BAR = "STATUS_BAR"
     private val DATE_TIME_VISIBILITY = "DATE_TIME_VISIBILITY"
+    private val DATE_TIME_LAST_VISIBLE_MODE = "DATE_TIME_LAST_VISIBLE_MODE"
     private val SWIPE_LEFT_ENABLED = "SWIPE_LEFT_ENABLED"
     private val SWIPE_RIGHT_ENABLED = "SWIPE_RIGHT_ENABLED"
     private val SCREEN_TIMEOUT = "SCREEN_TIMEOUT"
@@ -167,6 +168,10 @@ class Prefs(context: Context) {
     var dateTimeVisibility: Int
         get() = prefs.getInt(DATE_TIME_VISIBILITY, Constants.DateTime.ON)
         set(value) = prefs.edit().putInt(DATE_TIME_VISIBILITY, value).apply()
+
+    var dateTimeLastVisibleMode: Int
+        get() = prefs.getInt(DATE_TIME_LAST_VISIBLE_MODE, Constants.DateTime.ON)
+        set(value) = prefs.edit().putInt(DATE_TIME_LAST_VISIBLE_MODE, value).apply()
 
     var swipeLeftEnabled: Boolean
         get() = prefs.getBoolean(SWIPE_LEFT_ENABLED, true)
