@@ -73,6 +73,7 @@
                 </LinearLayout>
 
                 <TextView
+                    android:id="@+id/launcherLabel"
                     style="@style/TextSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -994,6 +995,22 @@
                             android:textSize="26sp" />
                     </LinearLayout>
                 </LinearLayout>
+
+                <TextView
+                    android:id="@+id/changeLauncherLink"
+                    style="@style/TextSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="18dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="8dp"
+                    android:text="@string/change_default_launcher"
+                    android:textColor="?attr/primaryColorTrans80"
+                    android:visibility="gone" />
 
                 <TextView
                     android:id="@+id/dailyWallpaper"

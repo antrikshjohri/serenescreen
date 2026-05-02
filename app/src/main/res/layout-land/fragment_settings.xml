@@ -33,6 +33,7 @@
             android:paddingVertical="56dp">
 
             <LinearLayout
+                android:id="@+id/firstTile"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
@@ -818,6 +819,17 @@
                 android:layout_marginTop="16dp"
                 android:gravity="center_horizontal"
                 android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/changeLauncherLink"
+                    style="@style/TextSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:padding="10dp"
+                    android:text="@string/change_default_launcher"
+                    android:visibility="gone" />
 
                 <TextView
                     android:id="@+id/rate"

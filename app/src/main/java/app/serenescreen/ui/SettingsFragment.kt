@@ -42,6 +42,7 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.slider.LabelFormatter
 import com.google.android.material.slider.Slider
 import app.serenescreen.BuildConfig
 import app.serenescreen.MainViewModel
@@ -56,12 +57,6 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import kotlinx.coroutines.launch
 
 class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListener {
-    companion object {
-        private const val SLIDER_LABEL_FLOATING = 0
-        private const val SLIDER_LABEL_GONE = 2
-        private const val SLIDER_LABEL_VISIBLE = 3
-    }
-
     private data class CustomBottomSheetLayout(
         val root: NestedScrollView,
         val container: LinearLayout
@@ -141,7 +136,7 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         when (view.id) {
             R.id.serenescreenHiddenApps -> showHiddenApps()
             R.id.appInfo -> openAppInfo(requireContext(), android.os.Process.myUserHandle(), BuildConfig.APPLICATION_ID)
-            R.id.setLauncher, R.id.setLauncherRow -> requestDefaultLauncher()
+            R.id.setLauncher, R.id.setLauncherRow, R.id.changeLauncherLink -> requestDefaultLauncher()
             R.id.toggleLock -> toggleLockMode()
             R.id.autoShowKeyboardSwitch, R.id.autoShowKeyboardRow -> toggleKeyboardText()
             R.id.homeAppsNum, R.id.homeAppsNumRow -> {
@@ -223,6 +218,7 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         binding.appInfo.setOnClickListener(this)
         binding.setLauncher.setOnClickListener(this)
         binding.root.findViewById<View>(R.id.setLauncherRow)?.setOnClickListener(this)
+        binding.root.findViewById<View>(R.id.changeLauncherLink)?.setOnClickListener(this)
         binding.autoShowKeyboardSwitch?.setOnClickListener(this)
         binding.root.findViewById<View>(R.id.autoShowKeyboardRow)?.setOnClickListener(this)
         //binding.toggleLock.setOnClickListener(this)
@@ -286,18 +282,18 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         binding.homeAppsNumSlider.setLabelFormatter { value ->
             value.toInt().toString()
         }
-        binding.homeAppsNumSlider.setLabelBehavior(SLIDER_LABEL_GONE)
+        binding.homeAppsNumSlider.setLabelBehavior(LabelFormatter.LABEL_GONE)
         binding.homeAppsNumSlider.addOnChangeListener { _: Slider, value: Float, fromUser: Boolean ->
             if (!fromUser) return@addOnChangeListener
             updateHomeAppsNum(value.toInt(), dismissSelector = false)
         }
         binding.homeAppsNumSlider.addOnSliderTouchListener(object : Slider.OnSliderTouchListener {
             override fun onStartTrackingTouch(slider: Slider) {
-                slider.setLabelBehavior(SLIDER_LABEL_VISIBLE)
+                slider.setLabelBehavior(LabelFormatter.LABEL_VISIBLE)
             }
 
             override fun onStopTrackingTouch(slider: Slider) {
-                slider.setLabelBehavior(SLIDER_LABEL_FLOATING)
+                slider.setLabelBehavior(LabelFormatter.LABEL_FLOATING)
             }
         })
     }
@@ -319,7 +315,7 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
             stepSize = 1f
             value = prefs.homeAppsNum.toFloat()
             setLabelFormatter { value -> value.toInt().toString() }
-            setLabelBehavior(SLIDER_LABEL_VISIBLE)
+            setLabelBehavior(LabelFormatter.LABEL_VISIBLE)
             addOnChangeListener { _, value, fromUser ->
                 if (!fromUser) return@addOnChangeListener
                 valueLabel.text = value.toInt().toString()
@@ -352,7 +348,7 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
 
     private fun hideHomeAppsSelector() {
         binding.homeAppsNumSlider.clearFocus()
-        binding.homeAppsNumSlider.setLabelBehavior(SLIDER_LABEL_GONE)
+        binding.homeAppsNumSlider.setLabelBehavior(LabelFormatter.LABEL_GONE)
         binding.appsNumSelectLayout.visibility = View.GONE
         binding.appsNumSelectLayout.alpha = 1f
         binding.appsNumSelectLayout.translationY = 0f
@@ -376,7 +372,7 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
             stepSize = 1f
             value = selectedStep.toFloat()
             setLabelFormatter { value -> value.toInt().toString() }
-            setLabelBehavior(SLIDER_LABEL_VISIBLE)
+            setLabelBehavior(LabelFormatter.LABEL_VISIBLE)
             addOnChangeListener { _, value, fromUser ->
                 if (!fromUser) return@addOnChangeListener
                 selectedStep = value.toInt()
@@ -612,6 +608,7 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
             } else {
                 binding.setLauncher.text = getString(R.string.not_set)
             }
+            updateLauncherCtaState(it)
         }
         viewModel.homeAppAlignment.observe(viewLifecycleOwner) {
             populateAlignment()
@@ -619,6 +616,17 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         viewModel.updateSwipeApps.observe(viewLifecycleOwner) {
             populateSwipeApps()
         }
+    }
+
+    private fun updateLauncherCtaState(isDefaultLauncher: Boolean) {
+        val currentBinding = _binding ?: return
+        val launcherLabel = currentBinding.root.findViewById<View>(R.id.launcherLabel)
+        val topLauncherTile = currentBinding.root.findViewById<View>(R.id.firstTile)
+        val changeLauncherLink = currentBinding.root.findViewById<View>(R.id.changeLauncherLink)
+
+        launcherLabel?.isVisible = !isDefaultLauncher
+        topLauncherTile?.isVisible = !isDefaultLauncher
+        changeLauncherLink?.isVisible = isDefaultLauncher
     }
 
     private fun applySwitchStyles() {
