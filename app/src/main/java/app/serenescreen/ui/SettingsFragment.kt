@@ -6,27 +6,46 @@ import android.app.role.RoleManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.res.ColorStateList
+import android.graphics.Color
+import android.graphics.Typeface
+import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.text.InputType
 import android.view.*
-import android.widget.Toast
 import android.view.View
+import android.widget.EditText
+import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.widget.AppCompatRadioButton
+import androidx.appcompat.widget.SwitchCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
+import androidx.core.view.setPadding
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
+import androidx.core.widget.NestedScrollView
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.card.MaterialCardView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.slider.Slider
 import app.serenescreen.BuildConfig
 import app.serenescreen.MainViewModel
+import app.serenescreen.data.AppModel
 import app.serenescreen.R
 import app.serenescreen.data.Constants
 import app.serenescreen.data.Prefs
@@ -34,6 +53,7 @@ import app.serenescreen.databinding.FragmentSettingsBinding
 import app.serenescreen.helper.*
 import app.serenescreen.listener.DeviceAdmin
 import com.google.firebase.analytics.FirebaseAnalytics
+import kotlinx.coroutines.launch
 
 class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListener {
     companion object {
@@ -41,6 +61,11 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         private const val SLIDER_LABEL_GONE = 2
         private const val SLIDER_LABEL_VISIBLE = 3
     }
+
+    private data class CustomBottomSheetLayout(
+        val root: NestedScrollView,
+        val container: LinearLayout
+    )
 
     private lateinit var prefs: Prefs
     private lateinit var viewModel: MainViewModel
@@ -89,15 +114,19 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         populateAppThemeText()
         populateTextSize()
         populateAlignment()
-        populateStatusBar()
         populateDateTime()
         populateSwipeApps()
         populateSwipeDownAction()
         populateActionHints()
         initClickListeners()
+        applySwitchStyles()
         initSliderListeners()
         initObservers()
         applyWindowInsets()
+        binding.root.post {
+            if (!isAdded || _binding == null) return@post
+            populateStatusBar()
+        }
     }
 
     override fun onClick(view: View) {
@@ -368,24 +397,69 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
     }
 
     private fun showThemeDialog() {
-        val labels = arrayOf(
-            getString(R.string.light),
-            getString(R.string.dark),
-            getString(R.string.system_default)
-        )
-        val values = intArrayOf(
-            AppCompatDelegate.MODE_NIGHT_NO,
-            AppCompatDelegate.MODE_NIGHT_YES,
-            AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-        )
-        val selectedIndex = values.indexOf(prefs.appTheme).coerceAtLeast(0)
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle(R.string.theme_short)
-            .setSingleChoiceItems(labels, selectedIndex) { dialog, which ->
-                updateTheme(values[which])
-                dialog.dismiss()
-            }
-            .show()
+        val dialog = BottomSheetDialog(requireContext())
+        val layout = createCustomBottomSheetLayout(dialog)
+        var selectedTheme = prefs.appTheme
+
+        fun render() {
+            layout.root.background = createBottomSheetSurfaceDrawable()
+            layout.container.removeAllViews()
+            addBottomSheetHandle(layout.container)
+            addBottomSheetHeader(
+                layout.container,
+                getString(R.string.theme_short),
+                getString(R.string.choose_how_serene_looks)
+            )
+
+            val resolvedPreviewTheme = resolveThemePreviewMode(selectedTheme)
+            layout.container.addView(
+                createThemePreviewCard(resolvedPreviewTheme == AppCompatDelegate.MODE_NIGHT_YES),
+                LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    marginStart = dpToPx(16)
+                    marginEnd = dpToPx(16)
+                    bottomMargin = dpToPx(22)
+                }
+            )
+
+            layout.container.addView(
+                createSegmentedSelector(
+                    labels = listOf(
+                        getString(R.string.light),
+                        getString(R.string.dark),
+                        getString(R.string.system_default)
+                    ),
+                    selectedIndex = when (selectedTheme) {
+                        AppCompatDelegate.MODE_NIGHT_NO -> 0
+                        AppCompatDelegate.MODE_NIGHT_YES -> 1
+                        else -> 2
+                    }
+                ) { index ->
+                    val nextTheme = when (index) {
+                        0 -> AppCompatDelegate.MODE_NIGHT_NO
+                        1 -> AppCompatDelegate.MODE_NIGHT_YES
+                        else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                    }
+                    if (selectedTheme == nextTheme) return@createSegmentedSelector
+                    selectedTheme = nextTheme
+                    updateTheme(selectedTheme)
+                    render()
+                },
+                LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    marginStart = dpToPx(16)
+                    marginEnd = dpToPx(16)
+                }
+            )
+
+        }
+
+        render()
+        dialog.show()
     }
 
     private fun showDateTimeModeDialog() {
@@ -408,43 +482,123 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
     }
 
     private fun showSwipeDownDialog() {
-        val labels = arrayOf(
-            getString(R.string.notifications),
-            getString(R.string.search)
+        val dialog = BottomSheetDialog(requireContext())
+        val content = createBottomSheetContent(
+            dialog,
+            getString(R.string.swipe_down_short),
+            getString(R.string.choose_what_happens_on_swipe_down)
         )
-        val values = intArrayOf(
-            Constants.SwipeDownAction.NOTIFICATIONS,
-            Constants.SwipeDownAction.SEARCH
-        )
-        val selectedIndex = values.indexOf(prefs.swipeDownAction).coerceAtLeast(0)
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle(R.string.swipe_down_short)
-            .setSingleChoiceItems(labels, selectedIndex) { dialog, which ->
-                updateSwipeDownAction(values[which])
-                dialog.dismiss()
-            }
-            .show()
+        content.addView(createRadioOnlyRow(
+            title = getString(R.string.notifications),
+            checked = prefs.swipeDownAction == Constants.SwipeDownAction.NOTIFICATIONS
+        ) {
+            updateSwipeDownAction(Constants.SwipeDownAction.NOTIFICATIONS)
+            dialog.dismiss()
+        })
+        content.addView(createDivider())
+        content.addView(createRadioOnlyRow(
+            title = getString(R.string.search),
+            checked = prefs.swipeDownAction == Constants.SwipeDownAction.SEARCH
+        ) {
+            updateSwipeDownAction(Constants.SwipeDownAction.SEARCH)
+            dialog.dismiss()
+        })
+        dialog.show()
     }
 
     private fun showAlignmentDialog() {
-        val labels = arrayOf(
-            getString(R.string.left),
-            getString(R.string.center),
-            getString(R.string.right),
-            if (prefs.homeBottomAlignment) getString(R.string.bottom_on) else getString(R.string.bottom_off)
-        )
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle(R.string.home_layout_alignment)
-            .setItems(labels) { dialog, which ->
-                when (which) {
-                    0 -> viewModel.updateHomeAlignment(Gravity.START)
-                    1 -> viewModel.updateHomeAlignment(Gravity.CENTER)
-                    2 -> viewModel.updateHomeAlignment(Gravity.END)
-                    3 -> updateHomeBottomAlignment()
+        val dialog = BottomSheetDialog(requireContext())
+        val layout = createCustomBottomSheetLayout(dialog)
+        var selectedAlignment = prefs.homeAlignment
+        var selectedBottomAlignment = prefs.homeBottomAlignment
+
+        fun render() {
+            layout.root.background = createBottomSheetSurfaceDrawable()
+            layout.container.removeAllViews()
+            addBottomSheetHandle(layout.container)
+            addBottomSheetHeader(
+                layout.container,
+                getString(R.string.home_layout_alignment),
+                getString(R.string.choose_how_app_names_align)
+            )
+
+            layout.container.addView(
+                createAlignmentPreviewCard(selectedAlignment, selectedBottomAlignment),
+                LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    marginStart = dpToPx(16)
+                    marginEnd = dpToPx(16)
+                    bottomMargin = dpToPx(20)
                 }
-                dialog.dismiss()
-            }
-            .show()
+            )
+
+            layout.container.addView(
+                createSegmentedSelector(
+                    labels = listOf(
+                        getString(R.string.left),
+                        getString(R.string.center),
+                        getString(R.string.right)
+                    ),
+                    selectedIndex = when (selectedAlignment) {
+                        Gravity.START -> 0
+                        Gravity.CENTER -> 1
+                        else -> 2
+                    }
+                ) { index ->
+                    val nextAlignment = when (index) {
+                        0 -> Gravity.START
+                        1 -> Gravity.CENTER
+                        else -> Gravity.END
+                    }
+                    if (!tryApplyAlignmentSelection(nextAlignment, selectedBottomAlignment)) return@createSegmentedSelector
+                    selectedAlignment = nextAlignment
+                    render()
+                },
+                LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    marginStart = dpToPx(16)
+                    marginEnd = dpToPx(16)
+                }
+            )
+
+            layout.container.addView(
+                createSwitchCardRow(
+                    title = getString(R.string.align_to_bottom),
+                    checked = selectedBottomAlignment
+                ) { isChecked ->
+                    if (!tryApplyAlignmentSelection(selectedAlignment, isChecked)) return@createSwitchCardRow
+                    selectedBottomAlignment = isChecked
+                    render()
+                },
+                LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    marginStart = dpToPx(16)
+                    marginEnd = dpToPx(16)
+                    topMargin = dpToPx(16)
+                }
+            )
+
+        }
+
+        render()
+        dialog.show()
+    }
+
+    private fun tryApplyAlignmentSelection(alignment: Int, bottomAligned: Boolean): Boolean {
+        if (viewModel.isSereneScreenDefault.value != true) {
+            requireContext().showToast(getString(R.string.please_set_serenescreen_as_default_first), Toast.LENGTH_LONG)
+            return false
+        }
+        prefs.homeBottomAlignment = bottomAligned
+        populateAlignment()
+        viewModel.updateHomeAlignment(alignment)
+        return true
     }
 
     private fun initObservers() {
@@ -465,6 +619,12 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         viewModel.updateSwipeApps.observe(viewLifecycleOwner) {
             populateSwipeApps()
         }
+    }
+
+    private fun applySwitchStyles() {
+        binding.autoShowKeyboardSwitch?.let(::styleSettingsSwitch)
+        binding.dateTimeSwitch?.let(::styleSettingsSwitch)
+        binding.statusBarSwitch?.let(::styleSettingsSwitch)
     }
 
     private fun applyWindowInsets() {
@@ -511,6 +671,16 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
             binding.swipeRightApp.setTextColor(requireContext().getColorFromAttr(R.attr.primaryColorTrans50))
             requireContext().showToast("Swipe right app disabled")
         }
+    }
+
+    private fun setHomeBottomAlignment(enabled: Boolean) {
+        if (viewModel.isSereneScreenDefault.value != true) {
+            requireContext().showToast(getString(R.string.please_set_serenescreen_as_default_first), Toast.LENGTH_LONG)
+            return
+        }
+        prefs.homeBottomAlignment = enabled
+        populateAlignment()
+        viewModel.updateHomeAlignment(prefs.homeAlignment)
     }
 
     private fun toggleStatusBar() {
@@ -564,23 +734,27 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
     }
 
     private fun showStatusBar() {
-        requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
-            requireActivity().window.insetsController?.show(WindowInsets.Type.statusBars())
-        else
+        val hostActivity = activity ?: return
+        hostActivity.window.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val controller = hostActivity.window.insetsController ?: return
+            controller.show(WindowInsets.Type.statusBars())
+        } else
             @Suppress("DEPRECATION", "InlinedApi")
-            requireActivity().window.decorView.apply {
+            hostActivity.window.decorView.apply {
                 systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
             }
     }
 
     private fun hideStatusBar() {
-        requireActivity().window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
-            requireActivity().window.insetsController?.hide(WindowInsets.Type.statusBars())
-        else {
+        val hostActivity = activity ?: return
+        hostActivity.window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val controller = hostActivity.window.insetsController ?: return
+            controller.hide(WindowInsets.Type.statusBars())
+        } else {
             @Suppress("DEPRECATION")
-            requireActivity().window.decorView.apply {
+            hostActivity.window.decorView.apply {
                 systemUiVisibility = View.SYSTEM_UI_FLAG_IMMERSIVE or View.SYSTEM_UI_FLAG_FULLSCREEN
             }
         }
@@ -717,19 +891,33 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
     }
 
     private fun updateTheme(appTheme: Int) {
-        if (AppCompatDelegate.getDefaultNightMode() == appTheme) return
+        val hostActivity = requireActivity() as? androidx.appcompat.app.AppCompatActivity
+        if (prefs.appTheme == appTheme && hostActivity?.delegate?.localNightMode == appTheme) return
         prefs.appTheme = appTheme
         populateAppThemeText(appTheme)
         setAppTheme(appTheme)
     }
 
     private fun setAppTheme(theme: Int) {
-        if (AppCompatDelegate.getDefaultNightMode() == theme) return
+        val hostActivity = requireActivity() as? androidx.appcompat.app.AppCompatActivity ?: return
+        hostActivity.delegate.localNightMode = theme
+        hostActivity.delegate.applyDayNight()
+        refreshSettingsThemeSurfaces()
         if (prefs.dailyWallpaper) {
             setPlainWallpaper(theme)
             viewModel.setWallpaperWorker()
         }
-        requireActivity().recreate()
+        hostActivity.window.decorView.post {
+            if (!isAdded || _binding == null) return@post
+            applySwitchStyles()
+            populateAppThemeText()
+            populateAlignment()
+            populateDateTime()
+            populateKeyboardText()
+            populateSwipeApps()
+            populateSwipeDownAction()
+            populateStatusBar()
+        }
     }
 
     private fun setPlainWallpaper(appTheme: Int) {
@@ -790,13 +978,7 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
     }*/
 
     private fun updateHomeBottomAlignment() {
-        if (viewModel.isSereneScreenDefault.value != true) {
-            requireContext().showToast(getString(R.string.please_set_serenescreen_as_default_first), Toast.LENGTH_LONG)
-            return
-        }
-        prefs.homeBottomAlignment = !prefs.homeBottomAlignment
-        populateAlignment()
-        viewModel.updateHomeAlignment(prefs.homeAlignment)
+        setHomeBottomAlignment(!prefs.homeBottomAlignment)
     }
 
     private fun populateAlignment() {
@@ -835,6 +1017,642 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         if (prefs.swipeDownAction == swipeDownFor) return
         prefs.swipeDownAction = swipeDownFor
         populateSwipeDownAction()
+    }
+
+    private fun showSwipeAppBottomSheet(flag: Int) {
+        val title = when (flag) {
+            Constants.FLAG_SET_SWIPE_LEFT_APP -> getString(R.string.swipe_left_short)
+            else -> getString(R.string.swipe_right_short)
+        }
+        val currentName = when (flag) {
+            Constants.FLAG_SET_SWIPE_LEFT_APP -> prefs.appNameSwipeLeft
+            else -> prefs.appNameSwipeRight
+        }
+        val currentPackage = when (flag) {
+            Constants.FLAG_SET_SWIPE_LEFT_APP -> prefs.appPackageSwipeLeft
+            else -> prefs.appPackageSwipeRight
+        }
+        val currentClassName = when (flag) {
+            Constants.FLAG_SET_SWIPE_LEFT_APP -> prefs.appActivityClassNameSwipeLeft
+            else -> prefs.appActivityClassNameRight
+        }
+        val currentUser = when (flag) {
+            Constants.FLAG_SET_SWIPE_LEFT_APP -> prefs.appUserSwipeLeft
+            else -> prefs.appUserSwipeRight
+        }
+
+        val dialog = BottomSheetDialog(requireContext())
+        val content = createBottomSheetContent(
+            dialog,
+            title,
+            getString(R.string.choose_app_or_action_for_gesture)
+        )
+        content.addView(createCurrentSelectionLabel(getString(R.string.current_selection, currentName)).apply {
+            layoutParams = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                bottomMargin = dpToPx(16)
+            }
+        })
+
+        val searchField = EditText(requireContext()).apply {
+            hint = getString(R.string.search_apps)
+            inputType = InputType.TYPE_CLASS_TEXT
+            isSingleLine = true
+            setTextColor(requireContext().getColorFromAttr(R.attr.primaryColor))
+            setHintTextColor(requireContext().getColorFromAttr(R.attr.primaryColorTrans80))
+            background = createRoundedStrokeDrawable(fillWithShade = true)
+            setCompoundDrawablesWithIntrinsicBounds(android.R.drawable.ic_menu_search, 0, 0, 0)
+            compoundDrawablePadding = dpToPx(10)
+            setPadding(dpToPx(16), dpToPx(14), dpToPx(16), dpToPx(14))
+            layoutParams = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                bottomMargin = dpToPx(18)
+            }
+        }
+        content.addView(searchField)
+
+        val listContainer = LinearLayout(requireContext()).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dpToPx(18), dpToPx(6), dpToPx(18), dpToPx(6))
+        }
+        val listCard = MaterialCardView(requireContext()).apply {
+            radius = dpToPx(18).toFloat()
+            strokeWidth = dpToPx(1)
+            strokeColor = requireContext().getColorFromAttr(R.attr.primaryColorInverseTrans50)
+            setCardBackgroundColor(requireContext().getColorFromAttr(R.attr.customBackground))
+            addView(
+                listContainer,
+                ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+            )
+            layoutParams = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                bottomMargin = dpToPx(8)
+            }
+        }
+        content.addView(listCard)
+
+        fun renderApps(apps: List<AppModel>) {
+            listContainer.removeAllViews()
+            apps.forEachIndexed { index, app ->
+                val selected = isSwipeAppSelected(
+                    app = app,
+                    currentName = currentName,
+                    currentPackage = currentPackage,
+                    currentClassName = currentClassName,
+                    currentUser = currentUser
+                )
+                listContainer.addView(createRadioOnlyRow(app.appLabel, selected) {
+                    saveSwipeAppSelection(app, flag)
+                    populateSwipeApps()
+                    dialog.dismiss()
+                })
+                if (index < apps.lastIndex) {
+                    listContainer.addView(createDivider())
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            val apps = getAppsList(requireContext(), prefs, true)
+            renderApps(apps)
+            searchField.addTextChangedListener { editable ->
+                val query = editable?.toString().orEmpty().trim()
+                val filtered = if (query.isBlank()) {
+                    apps
+                } else {
+                    apps.filter { it.appLabel.contains(query, ignoreCase = true) }
+                }
+                renderApps(filtered)
+            }
+        }
+
+        dialog.behavior.skipCollapsed = true
+        dialog.show()
+    }
+
+    private fun isSwipeAppSelected(
+        app: AppModel,
+        currentName: String,
+        currentPackage: String,
+        currentClassName: String?,
+        currentUser: String
+    ): Boolean {
+        if (currentPackage.isBlank()) {
+            return app.appLabel.equals(currentName, ignoreCase = true)
+        }
+        val packageMatches = app.appPackage == currentPackage
+        val classMatches = currentClassName.isNullOrBlank() || app.activityClassName == currentClassName
+        val userMatches = currentUser.isBlank() || app.user.toString() == currentUser
+        return packageMatches && classMatches && userMatches
+    }
+
+    private fun saveSwipeAppSelection(app: AppModel, flag: Int) {
+        when (flag) {
+            Constants.FLAG_SET_SWIPE_LEFT_APP -> {
+                prefs.appNameSwipeLeft = app.appLabel
+                prefs.appPackageSwipeLeft = app.appPackage
+                prefs.appUserSwipeLeft = app.user.toString()
+                prefs.appActivityClassNameSwipeLeft = app.activityClassName.toString()
+            }
+            Constants.FLAG_SET_SWIPE_RIGHT_APP -> {
+                prefs.appNameSwipeRight = app.appLabel
+                prefs.appPackageSwipeRight = app.appPackage
+                prefs.appUserSwipeRight = app.user.toString()
+                prefs.appActivityClassNameRight = app.activityClassName.toString()
+            }
+        }
+    }
+
+    private fun createBottomSheetContent(
+        dialog: BottomSheetDialog,
+        title: String,
+        subtitle: String
+    ): LinearLayout {
+        val root = NestedScrollView(requireContext()).apply {
+            isFillViewport = true
+        }
+        val container = LinearLayout(requireContext()).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dpToPx(24))
+        }
+        root.addView(
+            container,
+            ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        )
+        container.addView(View(requireContext()).apply {
+            background = GradientDrawable().apply {
+                shape = GradientDrawable.RECTANGLE
+                cornerRadius = dpToPx(2).toFloat()
+                setColor(requireContext().getColorFromAttr(R.attr.primaryColorTrans50))
+            }
+            layoutParams = LinearLayout.LayoutParams(dpToPx(44), dpToPx(4)).apply {
+                gravity = Gravity.CENTER_HORIZONTAL
+                bottomMargin = dpToPx(20)
+            }
+            alpha = 0.45f
+        })
+        container.addView(TextView(requireContext()).apply {
+            text = title
+            setTextColor(requireContext().getColorFromAttr(R.attr.primaryColor))
+            textSize = 22f
+            typeface = Typeface.create("sans-serif", Typeface.NORMAL)
+        })
+        container.addView(TextView(requireContext()).apply {
+            text = subtitle
+            setTextColor(requireContext().getColorFromAttr(R.attr.primaryColorTrans80))
+            textSize = 14f
+            layoutParams = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                topMargin = dpToPx(8)
+                bottomMargin = dpToPx(20)
+            }
+        })
+        dialog.setContentView(root)
+        return container
+    }
+
+    private fun createCustomBottomSheetLayout(dialog: BottomSheetDialog): CustomBottomSheetLayout {
+        val root = NestedScrollView(requireContext()).apply {
+            isFillViewport = true
+            background = createBottomSheetSurfaceDrawable()
+        }
+        val container = LinearLayout(requireContext()).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dpToPx(24))
+        }
+        root.addView(
+            container,
+            ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        )
+        val initialBottomPadding = dpToPx(24)
+        ViewCompat.setOnApplyWindowInsetsListener(root) { _, insets ->
+            val bottomInset = insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
+            container.updatePadding(bottom = initialBottomPadding + bottomInset)
+            insets
+        }
+        dialog.setContentView(root)
+        dialog.setOnShowListener {
+            dialog.findViewById<FrameLayout>(com.google.android.material.R.id.design_bottom_sheet)
+                ?.setBackgroundColor(android.graphics.Color.TRANSPARENT)
+        }
+        return CustomBottomSheetLayout(root, container)
+    }
+
+    private fun addBottomSheetHandle(container: LinearLayout) {
+        container.addView(View(requireContext()).apply {
+            background = GradientDrawable().apply {
+                shape = GradientDrawable.RECTANGLE
+                cornerRadius = dpToPx(2).toFloat()
+                setColor(requireContext().getColorFromAttr(R.attr.primaryColorTrans50))
+            }
+            layoutParams = LinearLayout.LayoutParams(dpToPx(44), dpToPx(4)).apply {
+                gravity = Gravity.CENTER_HORIZONTAL
+                bottomMargin = dpToPx(20)
+            }
+            alpha = 0.45f
+        })
+    }
+
+    private fun addBottomSheetHeader(
+        container: LinearLayout,
+        title: String,
+        subtitle: String
+    ) {
+        container.addView(TextView(requireContext()).apply {
+            text = title
+            gravity = Gravity.CENTER_HORIZONTAL
+            setTextColor(requireContext().getColorFromAttr(R.attr.primaryColor))
+            textSize = 18f
+            typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
+        })
+        container.addView(TextView(requireContext()).apply {
+            text = subtitle
+            gravity = Gravity.CENTER_HORIZONTAL
+            setTextColor(requireContext().getColorFromAttr(R.attr.primaryColorTrans80))
+            textSize = 14f
+            layoutParams = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                topMargin = dpToPx(8)
+                bottomMargin = dpToPx(22)
+            }
+        })
+    }
+
+    private fun createBottomSheetSurfaceDrawable(): GradientDrawable {
+        return GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            cornerRadii = floatArrayOf(
+                dpToPx(30).toFloat(), dpToPx(30).toFloat(),
+                dpToPx(30).toFloat(), dpToPx(30).toFloat(),
+                0f, 0f, 0f, 0f
+            )
+            setColor(requireContext().getColorFromAttr(R.attr.customBackground))
+        }
+    }
+
+    private fun createThemePreviewCard(isDark: Boolean): MaterialCardView {
+        val backgroundColor = if (isDark) 0xFF121316.toInt() else 0xFFF7F7F8.toInt()
+        val textColor = if (isDark) requireContext().getColor(android.R.color.white) else requireContext().getColorFromAttr(R.attr.primaryColor)
+        return MaterialCardView(requireContext()).apply {
+            radius = dpToPx(24).toFloat()
+            strokeWidth = dpToPx(1)
+            strokeColor = previewCardStrokeColor()
+            setCardBackgroundColor(backgroundColor)
+            addView(createPreviewContent(textColor, Gravity.START, bottomAligned = false))
+        }
+    }
+
+    private fun createAlignmentPreviewCard(
+        gravity: Int,
+        bottomAligned: Boolean
+    ): MaterialCardView {
+        return MaterialCardView(requireContext()).apply {
+            radius = dpToPx(24).toFloat()
+            strokeWidth = dpToPx(1)
+            strokeColor = previewCardStrokeColor()
+            setCardBackgroundColor(previewCardBackgroundColor())
+            addView(createPreviewContent(requireContext().getColorFromAttr(R.attr.primaryColor), gravity, bottomAligned))
+        }
+    }
+
+    private fun resolveThemePreviewMode(selectedTheme: Int): Int {
+        return if (selectedTheme == AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM) {
+            if (requireContext().isDarkThemeOn()) AppCompatDelegate.MODE_NIGHT_YES
+            else AppCompatDelegate.MODE_NIGHT_NO
+        } else {
+            selectedTheme
+        }
+    }
+
+    private fun createPreviewContent(
+        textColor: Int,
+        gravity: Int,
+        bottomAligned: Boolean
+    ): View {
+        val labels = listOf("Calendar", "Camera", "Chrome", "Clock", "Contacts", "Drive", "Messages", "Phone")
+        return LinearLayout(requireContext()).apply {
+            orientation = LinearLayout.VERTICAL
+            minimumHeight = dpToPx(300)
+            setPadding(dpToPx(18))
+            addView(TextView(requireContext()).apply {
+                text = "9:06"
+                setTextColor(textColor)
+                textSize = 30f
+                this.gravity = gravity
+            })
+            addView(TextView(requireContext()).apply {
+                text = "Sat, 2 May, 100%"
+                setTextColor(textColor)
+                textSize = 12f
+                this.gravity = gravity
+                layoutParams = LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                ).apply { topMargin = dpToPx(4) }
+            })
+            if (bottomAligned) {
+                addView(View(requireContext()), LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    0,
+                    1f
+                ))
+            }
+            addView(LinearLayout(requireContext()).apply {
+                orientation = LinearLayout.VERTICAL
+                labels.forEachIndexed { index, label ->
+                    addView(TextView(requireContext()).apply {
+                        text = label
+                        setTextColor(textColor)
+                        textSize = 14f
+                        this.gravity = gravity
+                        layoutParams = LinearLayout.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT
+                        ).apply {
+                            topMargin = if (index == 0) dpToPx(20) else dpToPx(8)
+                        }
+                    })
+                }
+            })
+            if (!bottomAligned) {
+                addView(View(requireContext()), LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    0,
+                    1f
+                ))
+            }
+        }
+    }
+
+    private fun createSegmentedSelector(
+        labels: List<String>,
+        selectedIndex: Int,
+        onSelected: (Int) -> Unit
+    ): View {
+        val context = requireContext()
+        return LinearLayout(context).apply {
+            orientation = LinearLayout.HORIZONTAL
+            clipToOutline = true
+            labels.forEachIndexed { index, label ->
+                addView(LinearLayout(context).apply {
+                    orientation = LinearLayout.HORIZONTAL
+                    gravity = Gravity.CENTER
+                    background = createSegmentedOptionDrawable(index == selectedIndex)
+                    layoutParams = LinearLayout.LayoutParams(
+                        0,
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        1f
+                    ).apply {
+                        if (index > 0) marginStart = dpToPx(8)
+                    }
+                    minimumHeight = dpToPx(56)
+                    setPadding(dpToPx(12), dpToPx(14), dpToPx(12), dpToPx(14))
+                    isClickable = true
+                    isFocusable = true
+                    setOnClickListener { onSelected(index) }
+                    addView(TextView(context).apply {
+                        text = label
+                        setTextColor(
+                            if (index == selectedIndex) {
+                                context.getColorFromAttr(R.attr.primaryColor)
+                            } else {
+                                context.getColorFromAttr(R.attr.primaryColorTrans80)
+                            }
+                        )
+                        textSize = 16f
+                        typeface = Typeface.create(
+                            if (index == selectedIndex) "sans-serif-medium" else "sans-serif",
+                            Typeface.NORMAL
+                        )
+                    })
+                })
+            }
+        }
+    }
+
+    private fun createSegmentedOptionDrawable(selected: Boolean): GradientDrawable {
+        val fillColor = if (selected) segmentedSelectedFillColor() else requireContext().getColorFromAttr(R.attr.customBackground)
+        return GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            cornerRadius = dpToPx(20).toFloat()
+            setColor(fillColor)
+            setStroke(dpToPx(1), segmentedStrokeColor())
+        }
+    }
+
+    private fun segmentedSelectedFillColor(): Int {
+        return if (requireContext().isDarkThemeOn()) 0xFF2C2C30.toInt() else 0xFFECECEF.toInt()
+    }
+
+    private fun segmentedStrokeColor(): Int {
+        return if (requireContext().isDarkThemeOn()) 0xFF4B4B52.toInt() else 0xFFD3D3D8.toInt()
+    }
+
+    private fun previewCardBackgroundColor(): Int {
+        return if (requireContext().isDarkThemeOn()) 0xFF121316.toInt() else 0xFFF7F7F8.toInt()
+    }
+
+    private fun previewCardStrokeColor(): Int {
+        return requireContext().getColorFromAttr(R.attr.primaryColorTrans50)
+    }
+
+    private fun refreshSettingsThemeSurfaces() {
+        val currentBinding = _binding ?: return
+        val backgroundColor = requireContext().getColorFromAttr(R.attr.customBackground)
+        currentBinding.scrollView.setBackgroundColor(backgroundColor)
+        currentBinding.settingsContent?.setBackgroundColor(backgroundColor)
+
+        currentBinding.firstTile?.setBackgroundResource(R.drawable.settings_card_bg)
+        (currentBinding.autoShowKeyboardRow?.parent as? View)?.setBackgroundResource(R.drawable.settings_card_bg)
+        (currentBinding.swipeLeftRow?.parent as? View)?.setBackgroundResource(R.drawable.settings_card_bg)
+        (currentBinding.rateRow?.parent as? View)?.setBackgroundResource(R.drawable.settings_card_bg)
+
+        val appearanceCard = currentBinding.homeAppsNumRow?.parent as? ViewGroup
+        appearanceCard?.setBackgroundResource(R.drawable.settings_card_bg)
+        val rowIds = setOf(
+            R.id.setLauncherRow,
+            R.id.homeAppsNumRow,
+            R.id.textSizeRow,
+            R.id.appThemeRow,
+            R.id.alignmentRow,
+            R.id.dateTimeRow,
+            R.id.statusBarRow,
+            R.id.autoShowKeyboardRow,
+            R.id.swipeLeftRow,
+            R.id.swipeRightRow,
+            R.id.swipeDownRow,
+            R.id.rateRow
+        )
+        currentBinding.scrollLayout?.let { refreshSelectableRowBackgrounds(it, rowIds) }
+        currentBinding.scrollLayout?.let { refreshSettingsForegroundTheme(it) }
+    }
+
+    private fun refreshSelectableRowBackgrounds(view: View, rowIds: Set<Int>) {
+        if (view.id in rowIds) {
+            val typedValue = android.util.TypedValue()
+            requireContext().theme.resolveAttribute(android.R.attr.selectableItemBackground, typedValue, true)
+            view.setBackgroundResource(typedValue.resourceId)
+        }
+        if (view is ViewGroup) {
+            for (index in 0 until view.childCount) {
+                refreshSelectableRowBackgrounds(view.getChildAt(index), rowIds)
+            }
+        }
+    }
+
+    private fun refreshSettingsForegroundTheme(view: View) {
+        when (view) {
+            is TextView -> {
+                val currentAlpha = Color.alpha(view.currentTextColor)
+                val targetColor = if (currentAlpha < 250) {
+                    requireContext().getColorFromAttr(R.attr.primaryColorTrans80)
+                } else {
+                    requireContext().getColorFromAttr(R.attr.primaryColor)
+                }
+                view.setTextColor(targetColor)
+                view.setShadowLayer(0f, 0f, 0f, Color.TRANSPARENT)
+            }
+            is ImageView -> {
+                view.setColorFilter(requireContext().getColorFromAttr(R.attr.primaryColor))
+            }
+        }
+        if (view is ViewGroup) {
+            for (index in 0 until view.childCount) {
+                refreshSettingsForegroundTheme(view.getChildAt(index))
+            }
+        }
+    }
+
+    private fun createSwitchCardRow(
+        title: String,
+        checked: Boolean,
+        onToggle: (Boolean) -> Unit
+    ): View {
+        val switchView = SwitchCompat(requireContext()).apply {
+            isChecked = checked
+            isClickable = false
+            isFocusable = false
+            showText = false
+        }
+        styleSettingsSwitch(switchView)
+        return LinearLayout(requireContext()).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            background = createRoundedStrokeDrawable()
+            setPadding(dpToPx(18), dpToPx(16), dpToPx(18), dpToPx(16))
+            isClickable = true
+            isFocusable = true
+            setOnClickListener { onToggle(!checked) }
+            addView(TextView(requireContext()).apply {
+                text = title
+                setTextColor(requireContext().getColorFromAttr(R.attr.primaryColor))
+                textSize = 16f
+                layoutParams = LinearLayout.LayoutParams(
+                    0,
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    1f
+                )
+            })
+            addView(switchView)
+        }
+    }
+
+    private fun styleSettingsSwitch(switchView: SwitchCompat) {
+        switchView.thumbTintList = ColorStateList(
+            arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()),
+            intArrayOf(
+                requireContext().getColor(android.R.color.white),
+                requireContext().getColor(android.R.color.white)
+            )
+        )
+        switchView.trackTintList = ColorStateList(
+            arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()),
+            intArrayOf(
+                0xFF4A7DFF.toInt(),
+                requireContext().getColorFromAttr(R.attr.primaryColorTrans50)
+            )
+        )
+        switchView.trackDrawable?.alpha = 255
+        switchView.thumbDrawable?.alpha = 255
+    }
+
+    private fun createRadioOnlyRow(
+        title: String,
+        checked: Boolean,
+        onClick: () -> Unit
+    ): View {
+        return LinearLayout(requireContext()).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            minimumHeight = dpToPx(58)
+            setPadding(0, dpToPx(8), 0, dpToPx(8))
+            isClickable = true
+            isFocusable = true
+            setOnClickListener { onClick() }
+            addView(TextView(requireContext()).apply {
+                text = title
+                setTextColor(requireContext().getColorFromAttr(R.attr.primaryColor))
+                textSize = 16f
+                typeface = Typeface.create("sans-serif", Typeface.NORMAL)
+                layoutParams = LinearLayout.LayoutParams(
+                    0,
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    1f
+                )
+            })
+            addView(AppCompatRadioButton(requireContext()).apply {
+                isChecked = checked
+                isClickable = false
+                jumpDrawablesToCurrentState()
+            })
+        }
+    }
+
+    private fun createDivider(): View {
+        return View(requireContext()).apply {
+            setBackgroundColor(requireContext().getColorFromAttr(R.attr.primaryColorInverseTrans50))
+            alpha = 0.25f
+            layoutParams = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                dpToPx(1)
+            )
+        }
+    }
+
+    private fun createCurrentSelectionLabel(text: String): View {
+        return TextView(requireContext()).apply {
+            this.text = text
+            setTextColor(requireContext().getColorFromAttr(R.attr.primaryColor))
+            textSize = 15f
+            typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
+            background = createRoundedStrokeDrawable(fillWithShade = true)
+            setPadding(dpToPx(14), dpToPx(9), dpToPx(14), dpToPx(9))
+        }
+    }
+
+    private fun createRoundedStrokeDrawable(fillWithShade: Boolean = false): GradientDrawable {
+        return GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            cornerRadius = dpToPx(16).toFloat()
+            setColor(
+                if (fillWithShade) requireContext().getColorFromAttr(R.attr.primaryShadeColor)
+                else requireContext().getColorFromAttr(R.attr.customBackground)
+            )
+            setStroke(dpToPx(1), requireContext().getColorFromAttr(R.attr.primaryColorInverseTrans50))
+        }
     }
 
     private fun shareApp() {
@@ -879,11 +1697,7 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
             requireContext().showToast("Long press to enable")
             return
         }
-        viewModel.getAppList(true)
-        findNavController().navigate(
-            R.id.action_settingsFragment_to_appListFragment,
-            bundleOf(Constants.Key.FLAG to flag)
-        )
+        showSwipeAppBottomSheet(flag)
     }
 
     private fun populateActionHints() {

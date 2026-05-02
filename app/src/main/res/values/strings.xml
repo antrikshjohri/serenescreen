@@ -110,9 +110,22 @@
     <string name="swipe_right_short">Swipe right</string>
     <string name="swipe_down_short">Swipe down</string>
     <string name="search">Search</string>
+    <string name="search_apps">Search apps</string>
     <string name="notifications">Notifications</string>
     <string name="support">Support</string>
     <string name="rate_serene">Rate Serene on Play Store</string>
+    <string name="choose_app_or_action_for_gesture">Choose the app or action for this gesture.</string>
+    <string name="current_selection">Current: %1$s</string>
+    <string name="choose_how_serene_looks">Choose how Serene looks.</string>
+    <string name="light_theme_description">Use a light theme with dark text.</string>
+    <string name="dark_theme_description">Use a dark theme with light text.</string>
+    <string name="follow_system_description">Match the device theme setting.</string>
+    <string name="choose_how_app_names_align">Choose how app names are placed on the home screen.</string>
+    <string name="bottom_align_apps">Bottom align apps</string>
+    <string name="align_to_bottom">Align to bottom</string>
+    <string name="preview_updates_when_you_change_the_option">Preview updates when you change the option.</string>
+    <string name="preview_updates_when_you_change_the_options">Preview updates when you change the options.</string>
+    <string name="choose_what_happens_on_swipe_down">Choose what happens when you swipe down.</string>
     <string name="accessibility_disclosure">Please turn on or off Serene Screen\'s accessibility service in your device\'s settings to enable or disable this feature.
     \n\nPlease note that this service is only used to let you turn off your device\'s screen using the double tap gesture.
     Our accessibility service does not collect or share any data.</string>
