@@ -694,7 +694,10 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         } else {
             hideStatusBar()
         }
-        binding.statusBarSwitch?.isChecked = prefs.showStatusBar
+        binding.statusBarSwitch?.apply {
+            isChecked = prefs.showStatusBar
+            jumpDrawablesToCurrentState()
+        }
     }
 
     private fun toggleDateTime(selected: Int) {
@@ -902,13 +905,13 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         val hostActivity = requireActivity() as? androidx.appcompat.app.AppCompatActivity ?: return
         hostActivity.delegate.localNightMode = theme
         hostActivity.delegate.applyDayNight()
-        refreshSettingsThemeSurfaces()
         if (prefs.dailyWallpaper) {
             setPlainWallpaper(theme)
             viewModel.setWallpaperWorker()
         }
         hostActivity.window.decorView.post {
             if (!isAdded || _binding == null) return@post
+            refreshSettingsThemeSurfaces()
             applySwitchStyles()
             populateAppThemeText()
             populateAlignment()
@@ -1475,13 +1478,13 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         currentBinding.scrollView.setBackgroundColor(backgroundColor)
         currentBinding.settingsContent?.setBackgroundColor(backgroundColor)
 
-        currentBinding.firstTile?.setBackgroundResource(R.drawable.settings_card_bg)
-        (currentBinding.autoShowKeyboardRow?.parent as? View)?.setBackgroundResource(R.drawable.settings_card_bg)
-        (currentBinding.swipeLeftRow?.parent as? View)?.setBackgroundResource(R.drawable.settings_card_bg)
-        (currentBinding.rateRow?.parent as? View)?.setBackgroundResource(R.drawable.settings_card_bg)
+        currentBinding.firstTile?.background = createSettingsSectionDrawable()
+        (currentBinding.autoShowKeyboardRow?.parent as? View)?.background = createSettingsSectionDrawable()
+        (currentBinding.swipeLeftRow?.parent as? View)?.background = createSettingsSectionDrawable()
+        (currentBinding.rateRow?.parent as? View)?.background = createSettingsSectionDrawable()
 
         val appearanceCard = currentBinding.homeAppsNumRow?.parent as? ViewGroup
-        appearanceCard?.setBackgroundResource(R.drawable.settings_card_bg)
+        appearanceCard?.background = createSettingsSectionDrawable()
         val rowIds = setOf(
             R.id.setLauncherRow,
             R.id.homeAppsNumRow,
@@ -1498,6 +1501,7 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         )
         currentBinding.scrollLayout?.let { refreshSelectableRowBackgrounds(it, rowIds) }
         currentBinding.scrollLayout?.let { refreshSettingsForegroundTheme(it) }
+        currentBinding.scrollLayout?.let { refreshDividerTheme(it) }
     }
 
     private fun refreshSelectableRowBackgrounds(view: View, rowIds: Set<Int>) {
@@ -1533,6 +1537,26 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
             for (index in 0 until view.childCount) {
                 refreshSettingsForegroundTheme(view.getChildAt(index))
             }
+        }
+    }
+
+    private fun refreshDividerTheme(view: View) {
+        if (view.id == View.NO_ID && view.layoutParams?.height == dpToPx(1)) {
+            view.setBackgroundColor(requireContext().getColorFromAttr(R.attr.primaryColorInverseTrans50))
+            view.alpha = 0.25f
+        }
+        if (view is ViewGroup) {
+            for (index in 0 until view.childCount) {
+                refreshDividerTheme(view.getChildAt(index))
+            }
+        }
+    }
+
+    private fun createSettingsSectionDrawable(): GradientDrawable {
+        return GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            cornerRadius = dpToPx(18).toFloat()
+            setColor(requireContext().getColorFromAttr(R.attr.customTileColor))
         }
     }
 
