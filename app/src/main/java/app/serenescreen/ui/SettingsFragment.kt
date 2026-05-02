@@ -1,6 +1,8 @@
 package app.serenescreen.ui
 
+import android.app.Activity
 import android.app.admin.DevicePolicyManager
+import android.app.role.RoleManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -11,6 +13,7 @@ import android.provider.Settings
 import android.view.*
 import android.widget.Toast
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
@@ -46,6 +49,13 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
 
     private lateinit var firebaseAnalytics: FirebaseAnalytics // Declare FirebaseAnalytics instance
 
+    private val requestHomeRoleLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            viewModel.isSereneScreenDefault()
+            if (it.resultCode != Activity.RESULT_OK && viewModel.isSereneScreenDefault.value != true) {
+                viewModel.launcherResetFailed.value = true
+            }
+        }
 
     private var _binding: FragmentSettingsBinding? = null
     private val binding get() = _binding!!
@@ -102,7 +112,7 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         when (view.id) {
             R.id.serenescreenHiddenApps -> showHiddenApps()
             R.id.appInfo -> openAppInfo(requireContext(), android.os.Process.myUserHandle(), BuildConfig.APPLICATION_ID)
-            R.id.setLauncher, R.id.setLauncherRow -> viewModel.resetDefaultLauncherApp(requireContext())
+            R.id.setLauncher, R.id.setLauncherRow -> requestDefaultLauncher()
             R.id.toggleLock -> toggleLockMode()
             R.id.autoShowKeyboardSwitch, R.id.autoShowKeyboardRow -> toggleKeyboardText()
             R.id.homeAppsNum, R.id.homeAppsNumRow -> {
@@ -294,6 +304,21 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
             .setView(container)
             .setPositiveButton(android.R.string.ok, null)
             .show()
+    }
+
+    private fun requestDefaultLauncher() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val roleManager = requireContext().getSystemService(RoleManager::class.java)
+            if (roleManager != null &&
+                roleManager.isRoleAvailable(RoleManager.ROLE_HOME) &&
+                !roleManager.isRoleHeld(RoleManager.ROLE_HOME)
+            ) {
+                requestHomeRoleLauncher.launch(roleManager.createRequestRoleIntent(RoleManager.ROLE_HOME))
+                return
+            }
+        }
+        viewModel.resetDefaultLauncherApp(requireContext())
+        viewModel.isSereneScreenDefault()
     }
 
     private fun hideHomeAppsSelector() {
