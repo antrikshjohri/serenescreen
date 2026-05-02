@@ -1,7 +1,13 @@
 <resources>
     <string name="app_name">Serene Screen</string>
+    <string name="minimal_launcher">Minimalist launcher</string>
+    <string name="settings_title">Serene</string>
     <string name="app">App</string>
+    <string name="launcher">Launcher</string>
     <string name="set_as_default_launcher">Set as default launcher</string>
+    <string name="set_default_short">Set Serene as default launcher</string>
+    <string name="not_set">Not set</string>
+    <string name="default_label">Default</string>
     <string name="app_text_color">Text color</string>
     <string name="double_tap_to_lock_screen">Double tap to lock</string>
     <string name="experimental_">(experimental)</string>
@@ -59,9 +65,11 @@
     <string name="status_bar">Show status bar</string>
     <string name="rename">Rename</string>
     <string name="show_date_time">Show date time</string>
+    <string name="show_date_time_amp">Show date &amp; time</string>
     <string name="appearance">Appearance</string>
     <string name="gestures">Gestures</string>
     <string name="theme_mode">Theme mode</string>
+    <string name="theme_short">Theme</string>
     <string name="system_default">System</string>
     <string name="dark">Dark</string>
     <string name="light">Light</string>
@@ -97,8 +105,13 @@
     <string name="tip_start_typing_for_rename">Tip: Start typing for app RENAME option</string>
     <string name="hidden_apps_message">Note: Tap on \'Serene Screen\' at the top of this Settings page to find your hidden apps.\n\nMore details available in our About page below.</string>
     <string name="swipe_down_for">Swipe down for</string>
+    <string name="swipe_left_short">Swipe left</string>
+    <string name="swipe_right_short">Swipe right</string>
+    <string name="swipe_down_short">Swipe down</string>
     <string name="search">Search</string>
     <string name="notifications">Notifications</string>
+    <string name="support">Support</string>
+    <string name="rate_serene">Rate Serene on Play Store</string>
     <string name="accessibility_disclosure">Please turn on or off Serene Screen\'s accessibility service in your device\'s settings to enable or disable this feature.
     \n\nPlease note that this service is only used to let you turn off your device\'s screen using the double tap gesture.
     Our accessibility service does not collect or share any data.</string>

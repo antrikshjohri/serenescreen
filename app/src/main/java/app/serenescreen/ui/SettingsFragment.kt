@@ -20,6 +20,7 @@ import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.slider.Slider
 import app.serenescreen.BuildConfig
 import app.serenescreen.MainViewModel
@@ -101,29 +102,29 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         when (view.id) {
             R.id.serenescreenHiddenApps -> showHiddenApps()
             R.id.appInfo -> openAppInfo(requireContext(), android.os.Process.myUserHandle(), BuildConfig.APPLICATION_ID)
-            R.id.setLauncher -> viewModel.resetDefaultLauncherApp(requireContext())
+            R.id.setLauncher, R.id.setLauncherRow -> viewModel.resetDefaultLauncherApp(requireContext())
             R.id.toggleLock -> toggleLockMode()
-            R.id.autoShowKeyboard -> toggleKeyboardText()
-            R.id.homeAppsNum -> {
+            R.id.autoShowKeyboard, R.id.autoShowKeyboardRow -> toggleKeyboardText()
+            R.id.homeAppsNum, R.id.homeAppsNumRow -> {
                 showHomeAppsSelector()
             }
             R.id.dailyWallpaperUrl -> requireContext().openUrl(prefs.dailyWallpaperUrl)
             R.id.dailyWallpaper -> toggleDailyWallpaperUpdate()
-            R.id.alignment -> binding.alignmentSelectLayout.visibility = View.VISIBLE
+            R.id.alignment, R.id.alignmentRow -> showAlignmentDialog()
             R.id.alignmentLeft -> viewModel.updateHomeAlignment(Gravity.START)
             R.id.alignmentCenter -> viewModel.updateHomeAlignment(Gravity.CENTER)
             R.id.alignmentRight -> viewModel.updateHomeAlignment(Gravity.END)
             R.id.alignmentBottom -> updateHomeBottomAlignment()
-            R.id.statusBar -> toggleStatusBar()
-            R.id.dateTime -> binding.dateTimeSelectLayout.visibility = View.VISIBLE
+            R.id.statusBar, R.id.statusBarRow -> toggleStatusBar()
+            R.id.dateTime, R.id.dateTimeRow -> showDateTimeDialog()
             R.id.dateTimeOn -> toggleDateTime(Constants.DateTime.ON)
             R.id.dateTimeOff -> toggleDateTime(Constants.DateTime.OFF)
             R.id.dateOnly -> toggleDateTime(Constants.DateTime.DATE_ONLY)
-            R.id.appThemeText -> binding.appThemeSelectLayout.visibility = View.VISIBLE
+            R.id.appThemeText, R.id.appThemeRow -> showThemeDialog()
             R.id.themeLight -> updateTheme(AppCompatDelegate.MODE_NIGHT_NO)
             R.id.themeDark -> updateTheme(AppCompatDelegate.MODE_NIGHT_YES)
             R.id.themeSystem -> updateTheme(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-            R.id.textSizeValue -> binding.textSizesLayout.visibility = View.VISIBLE
+            R.id.textSizeValue, R.id.textSizeRow -> showTextSizeDialog()
             R.id.actionAccessibility -> openAccessibilityService()
             R.id.closeAccessibility -> toggleAccessibilityVisibility(false)
             //R.id.notWorking -> requireContext().openUrl(Constants.URL_DOUBLE_TAP)
@@ -136,14 +137,14 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
             R.id.textSize6 -> updateTextSizeScale(Constants.TextSize.SIX)
             R.id.textSize7 -> updateTextSizeScale(Constants.TextSize.SEVEN)
 
-            R.id.swipeLeftApp -> showAppListIfEnabled(Constants.FLAG_SET_SWIPE_LEFT_APP)
-            R.id.swipeRightApp -> showAppListIfEnabled(Constants.FLAG_SET_SWIPE_RIGHT_APP)
-            R.id.swipeDownAction -> binding.swipeDownSelectLayout.visibility = View.VISIBLE
+            R.id.swipeLeftApp, R.id.swipeLeftRow -> showAppListIfEnabled(Constants.FLAG_SET_SWIPE_LEFT_APP)
+            R.id.swipeRightApp, R.id.swipeRightRow -> showAppListIfEnabled(Constants.FLAG_SET_SWIPE_RIGHT_APP)
+            R.id.swipeDownAction, R.id.swipeDownRow -> showSwipeDownDialog()
             R.id.notifications -> updateSwipeDownAction(Constants.SwipeDownAction.NOTIFICATIONS)
             R.id.search -> updateSwipeDownAction(Constants.SwipeDownAction.SEARCH)
 
             //R.id.rate -> requireContext().openUrl(Constants.URL_SERENESCREEN_PLAY_STORE)
-            R.id.rate -> {
+            R.id.rate, R.id.rateRow -> {
                 //prefs.rateClicked = true
                 requireActivity().rateApp()
                 // Log an event when the button is clicked
@@ -181,36 +182,48 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         binding.scrollLayout.setOnClickListener(this)
         binding.appInfo.setOnClickListener(this)
         binding.setLauncher.setOnClickListener(this)
+        binding.root.findViewById<View>(R.id.setLauncherRow)?.setOnClickListener(this)
         binding.autoShowKeyboard.setOnClickListener(this)
+        binding.root.findViewById<View>(R.id.autoShowKeyboardRow)?.setOnClickListener(this)
         //binding.toggleLock.setOnClickListener(this)
         binding.homeAppsNum.setOnClickListener(this)
+        binding.root.findViewById<View>(R.id.homeAppsNumRow)?.setOnClickListener(this)
         //binding.dailyWallpaperUrl.setOnClickListener(this)
         //binding.dailyWallpaper.setOnClickListener(this)
         binding.alignment.setOnClickListener(this)
+        binding.root.findViewById<View>(R.id.alignmentRow)?.setOnClickListener(this)
         binding.alignmentLeft.setOnClickListener(this)
         binding.alignmentCenter.setOnClickListener(this)
         binding.alignmentRight.setOnClickListener(this)
         binding.alignmentBottom.setOnClickListener(this)
         binding.statusBar.setOnClickListener(this)
+        binding.root.findViewById<View>(R.id.statusBarRow)?.setOnClickListener(this)
         binding.dateTime.setOnClickListener(this)
+        binding.root.findViewById<View>(R.id.dateTimeRow)?.setOnClickListener(this)
         binding.dateTimeOn.setOnClickListener(this)
         binding.dateTimeOff.setOnClickListener(this)
         binding.dateOnly.setOnClickListener(this)
         binding.swipeLeftApp.setOnClickListener(this)
+        binding.root.findViewById<View>(R.id.swipeLeftRow)?.setOnClickListener(this)
         binding.swipeRightApp.setOnClickListener(this)
+        binding.root.findViewById<View>(R.id.swipeRightRow)?.setOnClickListener(this)
         binding.swipeDownAction.setOnClickListener(this)
+        binding.root.findViewById<View>(R.id.swipeDownRow)?.setOnClickListener(this)
         binding.search.setOnClickListener(this)
         binding.notifications.setOnClickListener(this)
         binding.appThemeText.setOnClickListener(this)
+        binding.root.findViewById<View>(R.id.appThemeRow)?.setOnClickListener(this)
         binding.themeLight.setOnClickListener(this)
         binding.themeDark.setOnClickListener(this)
         binding.themeSystem.setOnClickListener(this)
         binding.textSizeValue.setOnClickListener(this)
+        binding.root.findViewById<View>(R.id.textSizeRow)?.setOnClickListener(this)
         binding.actionAccessibility.setOnClickListener(this)
         binding.closeAccessibility.setOnClickListener(this)
         binding.notWorking.setOnClickListener(this)
 
         binding.rate.setOnClickListener(this)
+        binding.root.findViewById<View>(R.id.rateRow)?.setOnClickListener(this)
 
         binding.textSize1.setOnClickListener(this)
         binding.textSize2.setOnClickListener(this)
@@ -249,16 +262,36 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
     }
 
     private fun showHomeAppsSelector() {
-        binding.homeAppsNumSlider.setLabelBehavior(SLIDER_LABEL_FLOATING)
-        binding.appsNumSelectLayout.visibility = View.VISIBLE
-        binding.appsNumSelectLayout.alpha = 0f
-        binding.appsNumSelectLayout.translationY = -20f
-        binding.appsNumSelectLayout.animate()
-            .alpha(1f)
-            .translationY(0f)
-            .setDuration(200)
-            .setInterpolator(android.view.animation.AccelerateDecelerateInterpolator())
-            .start()
+        val context = requireContext()
+        val container = android.widget.LinearLayout(context).apply {
+            orientation = android.widget.LinearLayout.VERTICAL
+            setPadding(dpToPx(24), dpToPx(12), dpToPx(24), 0)
+        }
+        val valueLabel = android.widget.TextView(context).apply {
+            text = prefs.homeAppsNum.toString()
+            setTextColor(context.getColorFromAttr(R.attr.primaryColor))
+            textSize = 16f
+        }
+        val slider = Slider(context).apply {
+            valueFrom = 0f
+            valueTo = 16f
+            stepSize = 1f
+            value = prefs.homeAppsNum.toFloat()
+            setLabelFormatter { value -> value.toInt().toString() }
+            setLabelBehavior(SLIDER_LABEL_VISIBLE)
+            addOnChangeListener { _, value, fromUser ->
+                if (!fromUser) return@addOnChangeListener
+                valueLabel.text = value.toInt().toString()
+                updateHomeAppsNum(value.toInt(), dismissSelector = false)
+            }
+        }
+        container.addView(valueLabel)
+        container.addView(slider)
+        MaterialAlertDialogBuilder(context)
+            .setTitle(R.string.apps_on_home_screen)
+            .setView(container)
+            .setPositiveButton(android.R.string.ok, null)
+            .show()
     }
 
     private fun hideHomeAppsSelector() {
@@ -269,14 +302,119 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         binding.appsNumSelectLayout.translationY = 0f
     }
 
+    private fun showTextSizeDialog() {
+        val labels = arrayOf("1", "2", "3", "4", "5", "6", "7")
+        val values = floatArrayOf(
+            Constants.TextSize.ONE,
+            Constants.TextSize.TWO,
+            Constants.TextSize.THREE,
+            Constants.TextSize.FOUR,
+            Constants.TextSize.FIVE,
+            Constants.TextSize.SIX,
+            Constants.TextSize.SEVEN
+        )
+        val selectedIndex = values.indexOfFirst { it == prefs.textSizeScale }.coerceAtLeast(0)
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.text_size)
+            .setSingleChoiceItems(labels, selectedIndex) { dialog, which ->
+                updateTextSizeScale(values[which])
+                dialog.dismiss()
+            }
+            .show()
+    }
+
+    private fun showThemeDialog() {
+        val labels = arrayOf(
+            getString(R.string.light),
+            getString(R.string.dark),
+            getString(R.string.system_default)
+        )
+        val values = intArrayOf(
+            AppCompatDelegate.MODE_NIGHT_NO,
+            AppCompatDelegate.MODE_NIGHT_YES,
+            AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+        )
+        val selectedIndex = values.indexOf(prefs.appTheme).coerceAtLeast(0)
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.theme_short)
+            .setSingleChoiceItems(labels, selectedIndex) { dialog, which ->
+                updateTheme(values[which])
+                dialog.dismiss()
+            }
+            .show()
+    }
+
+    private fun showDateTimeDialog() {
+        val labels = arrayOf(
+            getString(R.string.on),
+            getString(R.string.off),
+            getString(R.string.date_only)
+        )
+        val values = intArrayOf(
+            Constants.DateTime.ON,
+            Constants.DateTime.OFF,
+            Constants.DateTime.DATE_ONLY
+        )
+        val selectedIndex = values.indexOf(prefs.dateTimeVisibility).coerceAtLeast(0)
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.show_date_time_amp)
+            .setSingleChoiceItems(labels, selectedIndex) { dialog, which ->
+                toggleDateTime(values[which])
+                dialog.dismiss()
+            }
+            .show()
+    }
+
+    private fun showSwipeDownDialog() {
+        val labels = arrayOf(
+            getString(R.string.notifications),
+            getString(R.string.search)
+        )
+        val values = intArrayOf(
+            Constants.SwipeDownAction.NOTIFICATIONS,
+            Constants.SwipeDownAction.SEARCH
+        )
+        val selectedIndex = values.indexOf(prefs.swipeDownAction).coerceAtLeast(0)
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.swipe_down_short)
+            .setSingleChoiceItems(labels, selectedIndex) { dialog, which ->
+                updateSwipeDownAction(values[which])
+                dialog.dismiss()
+            }
+            .show()
+    }
+
+    private fun showAlignmentDialog() {
+        val labels = arrayOf(
+            getString(R.string.left),
+            getString(R.string.center),
+            getString(R.string.right),
+            if (prefs.homeBottomAlignment) getString(R.string.bottom_on) else getString(R.string.bottom_off)
+        )
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.home_layout_alignment)
+            .setItems(labels) { dialog, which ->
+                when (which) {
+                    0 -> viewModel.updateHomeAlignment(Gravity.START)
+                    1 -> viewModel.updateHomeAlignment(Gravity.CENTER)
+                    2 -> viewModel.updateHomeAlignment(Gravity.END)
+                    3 -> updateHomeBottomAlignment()
+                }
+                dialog.dismiss()
+            }
+            .show()
+    }
+
     private fun initObservers() {
         if (prefs.firstSettingsOpen) {
             prefs.firstSettingsOpen = false
         }
         viewModel.isSereneScreenDefault.observe(viewLifecycleOwner) {
             if (it) {
-                binding.setLauncher.text = getString(R.string.change_default_launcher)
+                binding.setLauncher.text = getString(R.string.default_label)
                 prefs.toShowHintCounter = prefs.toShowHintCounter + 1
+            } else {
+                binding.setLauncher.text = getString(R.string.not_set)
             }
         }
         viewModel.homeAppAlignment.observe(viewLifecycleOwner) {
