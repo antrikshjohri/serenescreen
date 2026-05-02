@@ -20,6 +20,7 @@ import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.slider.Slider
 import app.serenescreen.BuildConfig
 import app.serenescreen.MainViewModel
 import app.serenescreen.R
@@ -31,6 +32,11 @@ import app.serenescreen.listener.DeviceAdmin
 import com.google.firebase.analytics.FirebaseAnalytics
 
 class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListener {
+    companion object {
+        private const val SLIDER_LABEL_FLOATING = 0
+        private const val SLIDER_LABEL_GONE = 2
+        private const val SLIDER_LABEL_VISIBLE = 3
+    }
 
     private lateinit var prefs: Prefs
     private lateinit var viewModel: MainViewModel
@@ -65,6 +71,7 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
 
 
         binding.homeAppsNum.text = prefs.homeAppsNum.toString()
+        binding.homeAppsNumSlider.value = prefs.homeAppsNum.toFloat()
         populateKeyboardText()
         //populateLockSettings()
         //populateWallpaperText()
@@ -77,12 +84,13 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         populateSwipeDownAction()
         populateActionHints()
         initClickListeners()
+        initSliderListeners()
         initObservers()
         applyWindowInsets()
     }
 
     override fun onClick(view: View) {
-        binding.appsNumSelectLayout.visibility = View.GONE
+        hideHomeAppsSelector()
         binding.dateTimeSelectLayout.visibility = View.GONE
         binding.appThemeSelectLayout.visibility = View.GONE
         binding.swipeDownSelectLayout.visibility = View.GONE
@@ -97,15 +105,7 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
             R.id.toggleLock -> toggleLockMode()
             R.id.autoShowKeyboard -> toggleKeyboardText()
             R.id.homeAppsNum -> {
-                binding.appsNumSelectLayout.visibility = View.VISIBLE
-                binding.appsNumSelectLayout.alpha = 0f
-                binding.appsNumSelectLayout.translationY = -20f
-                binding.appsNumSelectLayout.animate()
-                    .alpha(1f)
-                    .translationY(0f)
-                    .setDuration(200)
-                    .setInterpolator(android.view.animation.AccelerateDecelerateInterpolator())
-                    .start()
+                showHomeAppsSelector()
             }
             R.id.dailyWallpaperUrl -> requireContext().openUrl(prefs.dailyWallpaperUrl)
             R.id.dailyWallpaper -> toggleDailyWallpaperUpdate()
@@ -127,24 +127,6 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
             R.id.actionAccessibility -> openAccessibilityService()
             R.id.closeAccessibility -> toggleAccessibilityVisibility(false)
             //R.id.notWorking -> requireContext().openUrl(Constants.URL_DOUBLE_TAP)
-
-            R.id.maxApps0 -> updateHomeAppsNum(0)
-            R.id.maxApps1 -> updateHomeAppsNum(1)
-            R.id.maxApps2 -> updateHomeAppsNum(2)
-            R.id.maxApps3 -> updateHomeAppsNum(3)
-            R.id.maxApps4 -> updateHomeAppsNum(4)
-            R.id.maxApps5 -> updateHomeAppsNum(5)
-            R.id.maxApps6 -> updateHomeAppsNum(6)
-            R.id.maxApps7 -> updateHomeAppsNum(7)
-            R.id.maxApps8 -> updateHomeAppsNum(8)
-            R.id.maxApps9 -> updateHomeAppsNum(9)
-            R.id.maxApps10 -> updateHomeAppsNum(10)
-            R.id.maxApps11 -> updateHomeAppsNum(11)
-            R.id.maxApps12 -> updateHomeAppsNum(12)
-            R.id.maxApps13 -> updateHomeAppsNum(13)
-            R.id.maxApps14 -> updateHomeAppsNum(14)
-            R.id.maxApps15 -> updateHomeAppsNum(15)
-            R.id.maxApps16 -> updateHomeAppsNum(16)
 
             R.id.textSize1 -> updateTextSizeScale(Constants.TextSize.ONE)
             R.id.textSize2 -> updateTextSizeScale(Constants.TextSize.TWO)
@@ -230,24 +212,6 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
 
         binding.rate.setOnClickListener(this)
 
-        binding.maxApps0.setOnClickListener(this)
-        binding.maxApps1.setOnClickListener(this)
-        binding.maxApps2.setOnClickListener(this)
-        binding.maxApps3.setOnClickListener(this)
-        binding.maxApps4.setOnClickListener(this)
-        binding.maxApps5.setOnClickListener(this)
-        binding.maxApps6.setOnClickListener(this)
-        binding.maxApps7.setOnClickListener(this)
-        binding.maxApps8.setOnClickListener(this)
-        binding.maxApps9.setOnClickListener(this)
-        binding.maxApps10.setOnClickListener(this)
-        binding.maxApps11.setOnClickListener(this)
-        binding.maxApps12.setOnClickListener(this)
-        binding.maxApps13.setOnClickListener(this)
-        binding.maxApps14.setOnClickListener(this)
-        binding.maxApps15.setOnClickListener(this)
-        binding.maxApps16.setOnClickListener(this)
-
         binding.textSize1.setOnClickListener(this)
         binding.textSize2.setOnClickListener(this)
         binding.textSize3.setOnClickListener(this)
@@ -262,6 +226,47 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         binding.swipeLeftApp.setOnLongClickListener(this)
         binding.swipeRightApp.setOnLongClickListener(this)
         //binding.toggleLock.setOnLongClickListener(this)
+    }
+
+    private fun initSliderListeners() {
+        binding.homeAppsNumSlider.setLabelFormatter { value ->
+            value.toInt().toString()
+        }
+        binding.homeAppsNumSlider.setLabelBehavior(SLIDER_LABEL_GONE)
+        binding.homeAppsNumSlider.addOnChangeListener { _: Slider, value: Float, fromUser: Boolean ->
+            if (!fromUser) return@addOnChangeListener
+            updateHomeAppsNum(value.toInt(), dismissSelector = false)
+        }
+        binding.homeAppsNumSlider.addOnSliderTouchListener(object : Slider.OnSliderTouchListener {
+            override fun onStartTrackingTouch(slider: Slider) {
+                slider.setLabelBehavior(SLIDER_LABEL_VISIBLE)
+            }
+
+            override fun onStopTrackingTouch(slider: Slider) {
+                slider.setLabelBehavior(SLIDER_LABEL_FLOATING)
+            }
+        })
+    }
+
+    private fun showHomeAppsSelector() {
+        binding.homeAppsNumSlider.setLabelBehavior(SLIDER_LABEL_FLOATING)
+        binding.appsNumSelectLayout.visibility = View.VISIBLE
+        binding.appsNumSelectLayout.alpha = 0f
+        binding.appsNumSelectLayout.translationY = -20f
+        binding.appsNumSelectLayout.animate()
+            .alpha(1f)
+            .translationY(0f)
+            .setDuration(200)
+            .setInterpolator(android.view.animation.AccelerateDecelerateInterpolator())
+            .start()
+    }
+
+    private fun hideHomeAppsSelector() {
+        binding.homeAppsNumSlider.clearFocus()
+        binding.homeAppsNumSlider.setLabelBehavior(SLIDER_LABEL_GONE)
+        binding.appsNumSelectLayout.visibility = View.GONE
+        binding.appsNumSelectLayout.alpha = 1f
+        binding.appsNumSelectLayout.translationY = 0f
     }
 
     private fun initObservers() {
@@ -360,16 +365,18 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
     }
 
     private fun showStatusBar() {
+        requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
             requireActivity().window.insetsController?.show(WindowInsets.Type.statusBars())
         else
             @Suppress("DEPRECATION", "InlinedApi")
             requireActivity().window.decorView.apply {
-                systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
             }
     }
 
     private fun hideStatusBar() {
+        requireActivity().window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
             requireActivity().window.insetsController?.hide(WindowInsets.Type.statusBars())
         else {
@@ -473,18 +480,23 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
             requireContext().showToast("SereneScreen is not default launcher.\nDaily wallpaper update may fail.", Toast.LENGTH_LONG)
     }
 
-    private fun updateHomeAppsNum(num: Int) {
+    private fun updateHomeAppsNum(num: Int, dismissSelector: Boolean = true) {
         prefs.homeAppsNum = num
         binding.homeAppsNum.text = num.toString()
-        binding.appsNumSelectLayout.animate()
-            .alpha(0f)
-            .translationY(-20f)
-            .setDuration(200)
-            .setInterpolator(android.view.animation.AccelerateDecelerateInterpolator())
-            .withEndAction {
-                binding.appsNumSelectLayout.visibility = View.GONE
-            }
-            .start()
+        if (binding.homeAppsNumSlider.value.toInt() != num) {
+            binding.homeAppsNumSlider.value = num.toFloat()
+        }
+        if (dismissSelector) {
+            binding.appsNumSelectLayout.animate()
+                .alpha(0f)
+                .translationY(-20f)
+                .setDuration(200)
+                .setInterpolator(android.view.animation.AccelerateDecelerateInterpolator())
+                .withEndAction {
+                    hideHomeAppsSelector()
+                }
+                .start()
+        }
     }
 
     private fun updateTextSizeScale(sizeScale: Float) {
