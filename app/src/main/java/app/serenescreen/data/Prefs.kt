@@ -31,6 +31,7 @@ class Prefs(context: Context) {
     private val HIDDEN_APPS_UPDATED = "HIDDEN_APPS_UPDATED"
     private val SHOW_HINT_COUNTER = "SHOW_HINT_COUNTER"
     private val APP_THEME = "APP_THEME"
+    private val THEME_V2_MIGRATED = "THEME_V2_MIGRATED"
     private val ABOUT_CLICKED = "ABOUT_CLICKED"
     private val RATE_CLICKED = "RATE_CLICKED"
     private val RENAME_TIP_SHOWN = "RENAME_TIP_SHOWN"
@@ -182,8 +183,29 @@ class Prefs(context: Context) {
         set(value) = prefs.edit().putBoolean(SWIPE_RIGHT_ENABLED, value).apply()
 
     var appTheme: Int
-        get() = prefs.getInt(APP_THEME, AppCompatDelegate.MODE_NIGHT_YES)
-        set(value) = prefs.edit().putInt(APP_THEME, value).apply()
+        get() {
+            if (!prefs.getBoolean(THEME_V2_MIGRATED, false)) {
+                val migrated = if (prefs.contains(APP_THEME)) {
+                    // Existing user who had a previous theme set
+                    when (prefs.getInt(APP_THEME, AppCompatDelegate.MODE_NIGHT_YES)) {
+                        AppCompatDelegate.MODE_NIGHT_NO -> Constants.Theme.LIGHT
+                        AppCompatDelegate.MODE_NIGHT_YES -> Constants.Theme.PITCH_BLACK
+                        AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM -> Constants.Theme.SYSTEM
+                        Constants.Theme.CHARCOAL -> Constants.Theme.CHARCOAL
+                        Constants.Theme.MIDNIGHT -> Constants.Theme.MIDNIGHT
+                        Constants.Theme.WARM_PAPER -> Constants.Theme.WARM_PAPER
+                        else -> Constants.Theme.PITCH_BLACK
+                    }
+                } else {
+                    // New user: default to Charcoal Grey (Eye-friendly)
+                    Constants.Theme.CHARCOAL
+                }
+                prefs.edit().putInt(APP_THEME, migrated).putBoolean(THEME_V2_MIGRATED, true).apply()
+                return migrated
+            }
+            return prefs.getInt(APP_THEME, Constants.Theme.CHARCOAL)
+        }
+        set(value) = prefs.edit().putInt(APP_THEME, value).putBoolean(THEME_V2_MIGRATED, true).apply()
 
     var textSizeScale: Float
         get() = prefs.getFloat(TEXT_SIZE_SCALE, 1.0f)

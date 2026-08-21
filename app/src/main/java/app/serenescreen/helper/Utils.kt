@@ -27,6 +27,7 @@ import android.widget.Toast
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.ContextCompat
 import app.serenescreen.BuildConfig
 import app.serenescreen.R
 import app.serenescreen.data.AppModel
@@ -204,22 +205,96 @@ fun resetDefaultLauncher(context: Context) {
     }
 }
 
-fun setPlainWallpaperByTheme(context: Context, appTheme: Int) {
-    when (appTheme) {
-        AppCompatDelegate.MODE_NIGHT_YES -> setPlainWallpaper(context, android.R.color.black)
-        AppCompatDelegate.MODE_NIGHT_NO -> setPlainWallpaper(context, android.R.color.white)
-        else -> {
-            if (context.isDarkThemeOn())
-                setPlainWallpaper(context, android.R.color.black)
-            else setPlainWallpaper(context, android.R.color.white)
+fun getThemeResId(theme: Int, isSystemDark: Boolean = false): Int {
+    return when (theme) {
+        Constants.Theme.CHARCOAL -> R.style.AppTheme_Charcoal
+        Constants.Theme.PITCH_BLACK -> R.style.AppTheme_PitchBlack
+        Constants.Theme.MIDNIGHT -> R.style.AppTheme_Midnight
+        Constants.Theme.LIGHT -> R.style.AppTheme_Light
+        Constants.Theme.WARM_PAPER -> R.style.AppTheme_WarmPaper
+        Constants.Theme.SYSTEM -> {
+            if (isSystemDark) R.style.AppTheme_Charcoal
+            else R.style.AppTheme_Light
         }
+        else -> R.style.AppTheme_Charcoal
     }
 }
 
-fun setPlainWallpaper(context: Context, color: Int) {
+fun isThemeDark(theme: Int, isSystemDark: Boolean = false): Boolean {
+    return when (theme) {
+        Constants.Theme.CHARCOAL,
+        Constants.Theme.PITCH_BLACK,
+        Constants.Theme.MIDNIGHT -> true
+        Constants.Theme.LIGHT,
+        Constants.Theme.WARM_PAPER -> false
+        Constants.Theme.SYSTEM -> isSystemDark
+        else -> true
+    }
+}
+
+fun getThemeBackgroundColor(context: Context, theme: Int): Int {
+    return when (theme) {
+        Constants.Theme.CHARCOAL -> ContextCompat.getColor(context, R.color.charcoal_bg)
+        Constants.Theme.PITCH_BLACK -> ContextCompat.getColor(context, R.color.pitch_black_bg)
+        Constants.Theme.MIDNIGHT -> ContextCompat.getColor(context, R.color.midnight_bg)
+        Constants.Theme.LIGHT -> ContextCompat.getColor(context, R.color.clean_light_bg)
+        Constants.Theme.WARM_PAPER -> ContextCompat.getColor(context, R.color.warm_paper_bg)
+        Constants.Theme.SYSTEM -> {
+            if (context.isDarkThemeOn()) ContextCompat.getColor(context, R.color.charcoal_bg)
+            else ContextCompat.getColor(context, R.color.clean_light_bg)
+        }
+        else -> ContextCompat.getColor(context, R.color.charcoal_bg)
+    }
+}
+
+fun getThemeTextColor(context: Context, theme: Int): Int {
+    return when (theme) {
+        Constants.Theme.CHARCOAL -> ContextCompat.getColor(context, R.color.charcoal_text)
+        Constants.Theme.PITCH_BLACK -> ContextCompat.getColor(context, R.color.pitch_black_text)
+        Constants.Theme.MIDNIGHT -> ContextCompat.getColor(context, R.color.midnight_text)
+        Constants.Theme.LIGHT -> ContextCompat.getColor(context, R.color.clean_light_text)
+        Constants.Theme.WARM_PAPER -> ContextCompat.getColor(context, R.color.warm_paper_text)
+        Constants.Theme.SYSTEM -> {
+            if (context.isDarkThemeOn()) ContextCompat.getColor(context, R.color.charcoal_text)
+            else ContextCompat.getColor(context, R.color.clean_light_text)
+        }
+        else -> ContextCompat.getColor(context, R.color.charcoal_text)
+    }
+}
+
+fun getThemeCardColor(context: Context, theme: Int): Int {
+    return when (theme) {
+        Constants.Theme.CHARCOAL -> ContextCompat.getColor(context, R.color.charcoal_tile)
+        Constants.Theme.PITCH_BLACK -> ContextCompat.getColor(context, R.color.pitch_black_tile)
+        Constants.Theme.MIDNIGHT -> ContextCompat.getColor(context, R.color.midnight_tile)
+        Constants.Theme.LIGHT -> ContextCompat.getColor(context, R.color.clean_light_tile)
+        Constants.Theme.WARM_PAPER -> ContextCompat.getColor(context, R.color.warm_paper_tile)
+        Constants.Theme.SYSTEM -> {
+            if (context.isDarkThemeOn()) ContextCompat.getColor(context, R.color.charcoal_tile)
+            else ContextCompat.getColor(context, R.color.clean_light_tile)
+        }
+        else -> ContextCompat.getColor(context, R.color.charcoal_tile)
+    }
+}
+
+fun setPlainWallpaperByTheme(context: Context, appTheme: Int) {
+    val bgColor = getThemeBackgroundColor(context, appTheme)
+    setPlainWallpaperWithColor(context, bgColor)
+}
+
+fun setPlainWallpaper(context: Context, colorResId: Int) {
+    try {
+        val colorInt = ContextCompat.getColor(context, colorResId)
+        setPlainWallpaperWithColor(context, colorInt)
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+}
+
+fun setPlainWallpaperWithColor(context: Context, @ColorInt color: Int) {
     try {
         val bitmap = Bitmap.createBitmap(1000, 2000, Bitmap.Config.ARGB_8888)
-        bitmap.eraseColor(context.getColor(color))
+        bitmap.eraseColor(color)
         val manager = WallpaperManager.getInstance(context)
         manager.setBitmap(bitmap)
         bitmap.recycle()
@@ -230,12 +305,14 @@ fun setPlainWallpaper(context: Context, color: Int) {
 
 fun getChangedAppTheme(context: Context, currentAppTheme: Int): Int {
     return when (currentAppTheme) {
-        AppCompatDelegate.MODE_NIGHT_YES -> AppCompatDelegate.MODE_NIGHT_NO
-        AppCompatDelegate.MODE_NIGHT_NO -> AppCompatDelegate.MODE_NIGHT_YES
+        Constants.Theme.CHARCOAL,
+        Constants.Theme.PITCH_BLACK,
+        Constants.Theme.MIDNIGHT -> Constants.Theme.LIGHT
+        Constants.Theme.LIGHT,
+        Constants.Theme.WARM_PAPER -> Constants.Theme.CHARCOAL
         else -> {
-            if (context.isDarkThemeOn())
-                AppCompatDelegate.MODE_NIGHT_NO
-            else AppCompatDelegate.MODE_NIGHT_YES
+            if (context.isDarkThemeOn()) Constants.Theme.LIGHT
+            else Constants.Theme.CHARCOAL
         }
     }
 }

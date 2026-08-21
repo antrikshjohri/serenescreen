@@ -74,6 +74,18 @@
     <string name="system_default">System</string>
     <string name="dark">Dark</string>
     <string name="light">Light</string>
+    <string name="theme_charcoal_grey">Charcoal Grey</string>
+    <string name="theme_charcoal_desc">Soft &amp; eye-friendly</string>
+    <string name="theme_pitch_black">Pitch Black</string>
+    <string name="theme_pitch_black_desc">Pure OLED black</string>
+    <string name="theme_midnight_navy">Midnight Navy</string>
+    <string name="theme_midnight_desc">Deep serene slate</string>
+    <string name="theme_clean_light">Clean Light</string>
+    <string name="theme_clean_light_desc">Crisp minimalist white</string>
+    <string name="theme_warm_paper">Warm Paper</string>
+    <string name="theme_warm_paper_desc">Comforting warm sepia</string>
+    <string name="theme_system_default">System default</string>
+    <string name="theme_system_desc">Matches device setting</string>
     <string name="double_tap_lock_uninstall_message">Double tap to lock enabled.
         \n\nNote: Turn this OFF first if you decide to delete Serene Screen.</string>
     <string name="welcome_to_serenescreen_settings">Our About page on the bottom has answers to all your questions. Don\'t forget. :)
@@ -137,6 +149,6 @@
     <string name="not_working"><u>Not working?</u></string>
     <string name="info">Info</string>
     <string name="delete">Delete</string>
-    <string name="day_battery">%s, %d%%</string>
+    <string name="day_battery">%1$s, %2$d%%</string>
     <string name="text_size">Text size</string>
 </resources>

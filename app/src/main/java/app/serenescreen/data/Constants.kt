@@ -39,9 +39,14 @@ object Constants {
     const val WALL_TYPE_LIGHT = "light"
     const val WALL_TYPE_DARK = "dark"
 
-//    const val THEME_MODE_DARK = 0
-//    const val THEME_MODE_LIGHT = 1
-//    const val THEME_MODE_SYSTEM = 2
+    object Theme {
+        const val CHARCOAL = 0
+        const val PITCH_BLACK = 1
+        const val LIGHT = 2
+        const val MIDNIGHT = 3
+        const val WARM_PAPER = 4
+        const val SYSTEM = 5
+    }
 
     const val FLAG_LAUNCH_APP = 100
     const val FLAG_HIDDEN_APPS = 101

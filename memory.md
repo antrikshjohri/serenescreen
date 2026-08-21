@@ -11,8 +11,9 @@ Use this file as the handoff summary for future chats. New chats should read thi
 
 ## Current Baseline
 
-- `compileSdk = 35`
-- `targetSdkVersion = 35`
+- `compileSdk = 36`
+- `targetSdkVersion = 36`
+- `versionCode = 75` (`v5.2.6`)
 - project rebrand from `Olauncher` to `Serene Screen` is already done
 - build has been passing with `./gradlew :app:assembleDebug`
 
@@ -47,11 +48,17 @@ Use this file as the handoff summary for future chats. New chats should read thi
 - `Text size`: slider-style selector
 - `Apps on home screen`: slider-style selector
 
-### Theme behavior
-
-- live theme switching from inside settings was fixed
-- settings surfaces and text refresh correctly when changing theme from the theme selector
-- light and dark themes should remain visually distinct and not mix
+### Theme behavior & Eye-friendly themes
+- Introduced curated aesthetic theme options:
+  - `Charcoal Grey` (Default soft dark for new users, eye-friendly, `#161719` background with `#E6E6EA` soft text)
+  - `Pitch Black` (AMOLED true black `#000000` with softened white text — preserved default for existing users)
+  - `Midnight Navy` (Deep serene slate dark `#0D131F`)
+  - `Clean Light` (Crisp minimalist light `#FFFFFF`)
+  - `Warm Paper` (Eye-friendly warm sepia / parchment `#F6F2EB`)
+  - `System Default` (Dynamically follows OS day/night mode)
+- Theme bottom sheet features a live preview card and a compact horizontal scrollable selector with pill chips and color swatches
+- Live theme switching updates all app surfaces, cards, and text in real time
+- Existing users' settings are preserved (legacy dark users remain on Pitch Black; new installs default to Charcoal Grey)
 
 ### Status bar / insets / layout fixes
 

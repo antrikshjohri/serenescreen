@@ -1,0 +1,4 @@
+- Fresh new Serene Screen branding
+- Redesigned settings with easier theme, alignment, and gesture controls
+- Better home screen spacing on larger phones
+- Smarter default launcher prompts and layout fixes across devices

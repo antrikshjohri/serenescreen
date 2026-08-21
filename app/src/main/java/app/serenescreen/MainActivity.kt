@@ -57,7 +57,14 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         prefs = Prefs(this)
-        AppCompatDelegate.setDefaultNightMode(prefs.appTheme)
+        val isSysDark = this.isDarkThemeOn()
+        val nightMode = if (isThemeDark(prefs.appTheme, isSysDark)) {
+            AppCompatDelegate.MODE_NIGHT_YES
+        } else {
+            AppCompatDelegate.MODE_NIGHT_NO
+        }
+        AppCompatDelegate.setDefaultNightMode(nightMode)
+        setTheme(getThemeResId(prefs.appTheme, isSysDark))
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -100,7 +107,7 @@ class MainActivity : AppCompatActivity() {
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         if (prefs.dailyWallpaper &&
-            prefs.appTheme == AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+            prefs.appTheme == Constants.Theme.SYSTEM
         ) {
             setPlainWallpaper()
             viewModel.setWallpaperWorker()
@@ -138,9 +145,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setPlainWallpaper() {
-        if (this.isDarkThemeOn())
-            setPlainWallpaper(this, android.R.color.black)
-        else setPlainWallpaper(this, android.R.color.white)
+        setPlainWallpaperByTheme(this, prefs.appTheme)
     }
 
     private fun openLauncherChooser(resetFailed: Boolean) {

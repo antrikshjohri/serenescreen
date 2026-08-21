@@ -1,52 +1,145 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
-
+    <style name="AppTheme.Base" parent="Theme.MaterialComponents.NoActionBar">
         <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
-
-        <item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="o_mr1">shortEdges
-        </item>
+        <item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="o_mr1">shortEdges</item>
         <item name="android:windowTranslucentStatus">true</item>
         <item name="android:windowTranslucentNavigation">true</item>
         <item name="android:colorEdgeEffect">@android:color/transparent</item>
-
         <item name="android:fitsSystemWindows">false</item>
         <item name="android:windowShowWallpaper">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowFullscreen">false</item>
-        <item name="android:windowLightStatusBar">true</item>
-        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowAnimationStyle">@style/WindowAnimationTransition</item>
         <item name="android:colorBackgroundCacheHint">@null</item>
-
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
-        <!--        <item name="android:enforceStatusBarContrast">false</item>-->
         <item name="android:enforceNavigationBarContrast" tools:targetApi="q">false</item>
-        <!--        <item name="android:windowTranslucentStatus">false</item>-->
-        <!--        <item name="android:windowTranslucentNavigation">true</item>-->
-
-
-
-        <item name="colorPrimary">@color/black</item>
-        <item name="colorPrimaryDark">@android:color/darker_gray</item>
-        <item name="colorAccent">@color/black</item>
-        <item name="primaryColor">@color/black</item>
-        <item name="primaryInverseColor">@color/blackInverse</item>
-        <item name="primaryTextShadowColor">@color/blackInverseTrans50</item>
-        <item name="primaryColorTrans50">@color/blackTrans50</item>
-        <item name="primaryColorTrans80">@color/blackTrans80</item>
-        <item name="primaryColorInverseTrans50">@color/blackInverseTrans50</item>
-        <item name="primaryColorInverseTrans80">@color/blackInverseTrans80</item>
-        <item name="primaryColorInverseTrans90">@color/blackInverseTrans90</item>
-        <item name="primaryShadeColor">@color/blackInverseTrans10</item>
-        <item name="primaryShadeDarkColor">@color/blackInverseTrans25</item>
-        <item name="dialogShadeColor">@color/blackInverseTrans50</item>
-        <item name="customBackground">@color/white</item>
-        <item name="customTileColor">@color/blackTrans5</item>
-
     </style>
+
+    <!-- Theme: Charcoal Grey (Default Soft Eye-Friendly Dark) -->
+    <style name="AppTheme.Charcoal" parent="AppTheme.Base">
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">false</item>
+
+        <item name="colorPrimary">@color/charcoal_text</item>
+        <item name="colorPrimaryDark">@color/charcoal_shade_dark</item>
+        <item name="colorAccent">@color/charcoal_text</item>
+
+        <item name="primaryColor">@color/charcoal_text</item>
+        <item name="primaryInverseColor">@color/charcoal_inverse</item>
+        <item name="primaryTextShadowColor">@color/charcoal_shadow</item>
+        <item name="primaryColorTrans50">@color/charcoal_text_trans50</item>
+        <item name="primaryColorTrans80">@color/charcoal_text_trans80</item>
+        <item name="primaryColorInverseTrans50">@color/charcoal_inverse_trans50</item>
+        <item name="primaryColorInverseTrans80">@color/charcoal_inverse_trans80</item>
+        <item name="primaryColorInverseTrans90">@color/charcoal_inverse_trans90</item>
+        <item name="primaryShadeColor">@color/charcoal_shade</item>
+        <item name="primaryShadeDarkColor">@color/charcoal_shade_dark</item>
+        <item name="dialogShadeColor">@color/charcoal_dialog_shade</item>
+        <item name="customBackground">@color/charcoal_bg</item>
+        <item name="customTileColor">@color/charcoal_tile</item>
+    </style>
+
+    <!-- Theme: Pitch Black (OLED AMOLED Dark) -->
+    <style name="AppTheme.PitchBlack" parent="AppTheme.Base">
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">false</item>
+
+        <item name="colorPrimary">@color/pitch_black_text</item>
+        <item name="colorPrimaryDark">@color/pitch_black_shade_dark</item>
+        <item name="colorAccent">@color/pitch_black_text</item>
+
+        <item name="primaryColor">@color/pitch_black_text</item>
+        <item name="primaryInverseColor">@color/pitch_black_inverse</item>
+        <item name="primaryTextShadowColor">@color/pitch_black_shadow</item>
+        <item name="primaryColorTrans50">@color/pitch_black_text_trans50</item>
+        <item name="primaryColorTrans80">@color/pitch_black_text_trans80</item>
+        <item name="primaryColorInverseTrans50">@color/pitch_black_inverse_trans50</item>
+        <item name="primaryColorInverseTrans80">@color/pitch_black_inverse_trans80</item>
+        <item name="primaryColorInverseTrans90">@color/pitch_black_inverse_trans90</item>
+        <item name="primaryShadeColor">@color/pitch_black_shade</item>
+        <item name="primaryShadeDarkColor">@color/pitch_black_shade_dark</item>
+        <item name="dialogShadeColor">@color/pitch_black_dialog_shade</item>
+        <item name="customBackground">@color/pitch_black_bg</item>
+        <item name="customTileColor">@color/pitch_black_tile</item>
+    </style>
+
+    <!-- Theme: Midnight Navy (Deep Blue Dark) -->
+    <style name="AppTheme.Midnight" parent="AppTheme.Base">
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">false</item>
+
+        <item name="colorPrimary">@color/midnight_text</item>
+        <item name="colorPrimaryDark">@color/midnight_shade_dark</item>
+        <item name="colorAccent">@color/midnight_text</item>
+
+        <item name="primaryColor">@color/midnight_text</item>
+        <item name="primaryInverseColor">@color/midnight_inverse</item>
+        <item name="primaryTextShadowColor">@color/midnight_shadow</item>
+        <item name="primaryColorTrans50">@color/midnight_text_trans50</item>
+        <item name="primaryColorTrans80">@color/midnight_text_trans80</item>
+        <item name="primaryColorInverseTrans50">@color/midnight_inverse_trans50</item>
+        <item name="primaryColorInverseTrans80">@color/midnight_inverse_trans80</item>
+        <item name="primaryColorInverseTrans90">@color/midnight_inverse_trans90</item>
+        <item name="primaryShadeColor">@color/midnight_shade</item>
+        <item name="primaryShadeDarkColor">@color/midnight_shade_dark</item>
+        <item name="dialogShadeColor">@color/midnight_dialog_shade</item>
+        <item name="customBackground">@color/midnight_bg</item>
+        <item name="customTileColor">@color/midnight_tile</item>
+    </style>
+
+    <!-- Theme: Clean Light (Crisp Minimalist White) -->
+    <style name="AppTheme.Light" parent="AppTheme.Base">
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
+
+        <item name="colorPrimary">@color/clean_light_text</item>
+        <item name="colorPrimaryDark">@color/clean_light_shade_dark</item>
+        <item name="colorAccent">@color/clean_light_text</item>
+
+        <item name="primaryColor">@color/clean_light_text</item>
+        <item name="primaryInverseColor">@color/clean_light_inverse</item>
+        <item name="primaryTextShadowColor">@color/clean_light_shadow</item>
+        <item name="primaryColorTrans50">@color/clean_light_text_trans50</item>
+        <item name="primaryColorTrans80">@color/clean_light_text_trans80</item>
+        <item name="primaryColorInverseTrans50">@color/clean_light_inverse_trans50</item>
+        <item name="primaryColorInverseTrans80">@color/clean_light_inverse_trans80</item>
+        <item name="primaryColorInverseTrans90">@color/clean_light_inverse_trans90</item>
+        <item name="primaryShadeColor">@color/clean_light_shade</item>
+        <item name="primaryShadeDarkColor">@color/clean_light_shade_dark</item>
+        <item name="dialogShadeColor">@color/clean_light_dialog_shade</item>
+        <item name="customBackground">@color/clean_light_bg</item>
+        <item name="customTileColor">@color/clean_light_tile</item>
+    </style>
+
+    <!-- Theme: Warm Paper (Eye-Friendly Warm Sepia / Cream) -->
+    <style name="AppTheme.WarmPaper" parent="AppTheme.Base">
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
+
+        <item name="colorPrimary">@color/warm_paper_text</item>
+        <item name="colorPrimaryDark">@color/warm_paper_shade_dark</item>
+        <item name="colorAccent">@color/warm_paper_text</item>
+
+        <item name="primaryColor">@color/warm_paper_text</item>
+        <item name="primaryInverseColor">@color/warm_paper_inverse</item>
+        <item name="primaryTextShadowColor">@color/warm_paper_shadow</item>
+        <item name="primaryColorTrans50">@color/warm_paper_text_trans50</item>
+        <item name="primaryColorTrans80">@color/warm_paper_text_trans80</item>
+        <item name="primaryColorInverseTrans50">@color/warm_paper_inverse_trans50</item>
+        <item name="primaryColorInverseTrans80">@color/warm_paper_inverse_trans80</item>
+        <item name="primaryColorInverseTrans90">@color/warm_paper_inverse_trans90</item>
+        <item name="primaryShadeColor">@color/warm_paper_shade</item>
+        <item name="primaryShadeDarkColor">@color/warm_paper_shade_dark</item>
+        <item name="dialogShadeColor">@color/warm_paper_dialog_shade</item>
+        <item name="customBackground">@color/warm_paper_bg</item>
+        <item name="customTileColor">@color/warm_paper_tile</item>
+    </style>
+
+    <!-- Default AppTheme -->
+    <style name="AppTheme" parent="AppTheme.Charcoal" />
 
     <style name="WindowAnimationTransition">
         <item name="android:windowEnterAnimation">@android:anim/fade_in</item>

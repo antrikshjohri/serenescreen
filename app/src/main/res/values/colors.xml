@@ -4,9 +4,9 @@
     <color name="colorPrimaryDark">@android:color/darker_gray</color>
     <color name="colorAccent">#FFEB3B</color>
     <color name="background_light">#FFFFFF</color> <!-- White -->
-    <color name="background_dark">#000000</color> <!-- Black -->
+    <color name="background_dark">#161719</color> <!-- Eye-friendly Charcoal -->
 
-    <!--White-->
+    <!-- Legacy White/Black references for backward compatibility -->
     <color name="white">#FFFFFF</color>
     <color name="whiteTrans90">#E6FFFFFF</color>
     <color name="whiteTrans80">#CCFFFFFF</color>
@@ -19,7 +19,6 @@
     <color name="whiteInverseTrans80">#CC000000</color>
     <color name="whiteInverseTrans90">#E6000000</color>
 
-    <!--Black-->
     <color name="black">#000000</color>
     <color name="blackTrans90">#E6000000</color>
     <color name="blackTrans80">#CC000000</color>
@@ -34,4 +33,93 @@
     <color name="blackInverseTrans80">#CCFFFFFF</color>
     <color name="blackInverseTrans90">#E6FFFFFF</color>
 
+    <!-- Theme: Charcoal Grey (Soft Dark - Eye Friendly) -->
+    <color name="charcoal_bg">#161719</color>
+    <color name="charcoal_tile">#222327</color>
+    <color name="charcoal_text">#E6E6EA</color>
+    <color name="charcoal_text_trans80">#B8B8C0</color>
+    <color name="charcoal_text_trans50">#80B8B8C0</color>
+    <color name="charcoal_text_trans20">#33B8B8C0</color>
+    <color name="charcoal_inverse">#161719</color>
+    <color name="charcoal_inverse_trans10">#1A000000</color>
+    <color name="charcoal_inverse_trans25">#40000000</color>
+    <color name="charcoal_inverse_trans50">#80000000</color>
+    <color name="charcoal_inverse_trans80">#CC000000</color>
+    <color name="charcoal_inverse_trans90">#E6000000</color>
+    <color name="charcoal_shade">#1C1D21</color>
+    <color name="charcoal_shade_dark">#2B2C32</color>
+    <color name="charcoal_dialog_shade">#B3000000</color>
+    <color name="charcoal_shadow">#80000000</color>
+
+    <!-- Theme: Pitch Black (OLED AMOLED Dark) -->
+    <color name="pitch_black_bg">#000000</color>
+    <color name="pitch_black_tile">#18181A</color>
+    <color name="pitch_black_text">#F2F2F4</color>
+    <color name="pitch_black_text_trans80">#BFBFC8</color>
+    <color name="pitch_black_text_trans50">#80BFBFC8</color>
+    <color name="pitch_black_text_trans20">#33BFBFC8</color>
+    <color name="pitch_black_inverse">#000000</color>
+    <color name="pitch_black_inverse_trans10">#1A000000</color>
+    <color name="pitch_black_inverse_trans25">#40000000</color>
+    <color name="pitch_black_inverse_trans50">#80000000</color>
+    <color name="pitch_black_inverse_trans80">#CC000000</color>
+    <color name="pitch_black_inverse_trans90">#E6000000</color>
+    <color name="pitch_black_shade">#121214</color>
+    <color name="pitch_black_shade_dark">#1E1E22</color>
+    <color name="pitch_black_dialog_shade">#CC000000</color>
+    <color name="pitch_black_shadow">#80000000</color>
+
+    <!-- Theme: Midnight Navy (Deep Blue Dark) -->
+    <color name="midnight_bg">#0D131F</color>
+    <color name="midnight_tile">#162032</color>
+    <color name="midnight_text">#E2E8F0</color>
+    <color name="midnight_text_trans80">#94A3B8</color>
+    <color name="midnight_text_trans50">#8094A3B8</color>
+    <color name="midnight_text_trans20">#3394A3B8</color>
+    <color name="midnight_inverse">#0D131F</color>
+    <color name="midnight_inverse_trans10">#1A000000</color>
+    <color name="midnight_inverse_trans25">#40000000</color>
+    <color name="midnight_inverse_trans50">#80000000</color>
+    <color name="midnight_inverse_trans80">#CC000000</color>
+    <color name="midnight_inverse_trans90">#E6000000</color>
+    <color name="midnight_shade">#131B2B</color>
+    <color name="midnight_shade_dark">#1F2B42</color>
+    <color name="midnight_dialog_shade">#B3080D17</color>
+    <color name="midnight_shadow">#80000000</color>
+
+    <!-- Theme: Clean Light (Crisp Minimalist White) -->
+    <color name="clean_light_bg">#FFFFFF</color>
+    <color name="clean_light_tile">#F4F4F6</color>
+    <color name="clean_light_text">#111113</color>
+    <color name="clean_light_text_trans80">#555560</color>
+    <color name="clean_light_text_trans50">#888894</color>
+    <color name="clean_light_text_trans20">#26111113</color>
+    <color name="clean_light_inverse">#FFFFFF</color>
+    <color name="clean_light_inverse_trans10">#1AFFFFFF</color>
+    <color name="clean_light_inverse_trans25">#40FFFFFF</color>
+    <color name="clean_light_inverse_trans50">#80FFFFFF</color>
+    <color name="clean_light_inverse_trans80">#CCFFFFFF</color>
+    <color name="clean_light_inverse_trans90">#E6FFFFFF</color>
+    <color name="clean_light_shade">#EAEAEF</color>
+    <color name="clean_light_shade_dark">#D8D8E0</color>
+    <color name="clean_light_dialog_shade">#80000000</color>
+    <color name="clean_light_shadow">#40FFFFFF</color>
+
+    <!-- Theme: Warm Paper (Eye-Friendly Warm Sepia / Cream) -->
+    <color name="warm_paper_bg">#F6F2EB</color>
+    <color name="warm_paper_tile">#ECE5DA</color>
+    <color name="warm_paper_text">#2C2621</color>
+    <color name="warm_paper_text_trans80">#6B6055</color>
+    <color name="warm_paper_text_trans50">#9A8E82</color>
+    <color name="warm_paper_text_trans20">#262C2621</color>
+    <color name="warm_paper_inverse">#F6F2EB</color>
+    <color name="warm_paper_inverse_trans10">#1AF6F2EB</color>
+    <color name="warm_paper_inverse_trans25">#40F6F2EB</color>
+    <color name="warm_paper_inverse_trans50">#80F6F2EB</color>
+    <color name="warm_paper_inverse_trans80">#CCF6F2EB</color>
+    <color name="warm_paper_inverse_trans90">#E6F6F2EB</color>
+    <color name="warm_paper_shade">#E4DCCE</color>
+    <color name="warm_paper_shade_dark">#D4C9B8</color>
+    <color name="warm_paper_dialog_shade">#80201B17</color>
+    <color name="warm_paper_shadow">#40FFFFFF</color>
 </resources>

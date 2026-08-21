@@ -19,6 +19,7 @@ import android.view.*
 import android.view.View
 import android.widget.EditText
 import android.widget.FrameLayout
+import android.widget.HorizontalScrollView
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -60,6 +61,16 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
     private data class CustomBottomSheetLayout(
         val root: NestedScrollView,
         val container: LinearLayout
+    )
+
+    private data class ThemeOption(
+        val id: Int,
+        val titleRes: Int,
+        val descRes: Int,
+        val primaryColorHex: Int,
+        val accentColorHex: Int,
+        val isSplit: Boolean = false,
+        val splitColorHex: Int = 0
     )
 
     private lateinit var prefs: Prefs
@@ -156,9 +167,9 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
             R.id.dateTimeOff -> toggleDateTime(Constants.DateTime.OFF)
             R.id.dateOnly -> toggleDateTime(Constants.DateTime.DATE_ONLY)
             R.id.appThemeText, R.id.appThemeRow -> showThemeDialog()
-            R.id.themeLight -> updateTheme(AppCompatDelegate.MODE_NIGHT_NO)
-            R.id.themeDark -> updateTheme(AppCompatDelegate.MODE_NIGHT_YES)
-            R.id.themeSystem -> updateTheme(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+            R.id.themeLight -> updateTheme(Constants.Theme.LIGHT)
+            R.id.themeDark -> updateTheme(Constants.Theme.CHARCOAL)
+            R.id.themeSystem -> updateTheme(Constants.Theme.SYSTEM)
             R.id.textSizeValue, R.id.textSizeRow -> showTextSizeDialog()
             R.id.actionAccessibility -> openAccessibilityService()
             R.id.closeAccessibility -> toggleAccessibilityVisibility(false)
@@ -397,6 +408,15 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         val layout = createCustomBottomSheetLayout(dialog)
         var selectedTheme = prefs.appTheme
 
+        val themeOptions = listOf(
+            ThemeOption(Constants.Theme.CHARCOAL, R.string.theme_charcoal_grey, R.string.theme_charcoal_desc, 0xFF161719.toInt(), 0xFFE6E6EA.toInt()),
+            ThemeOption(Constants.Theme.PITCH_BLACK, R.string.theme_pitch_black, R.string.theme_pitch_black_desc, 0xFF000000.toInt(), 0xFFF2F2F4.toInt()),
+            ThemeOption(Constants.Theme.MIDNIGHT, R.string.theme_midnight_navy, R.string.theme_midnight_desc, 0xFF0D131F.toInt(), 0xFFE2E8F0.toInt()),
+            ThemeOption(Constants.Theme.LIGHT, R.string.theme_clean_light, R.string.theme_clean_light_desc, 0xFFFFFFFF.toInt(), 0xFF111113.toInt()),
+            ThemeOption(Constants.Theme.WARM_PAPER, R.string.theme_warm_paper, R.string.theme_warm_paper_desc, 0xFFF6F2EB.toInt(), 0xFF2C2621.toInt()),
+            ThemeOption(Constants.Theme.SYSTEM, R.string.theme_system_default, R.string.theme_system_desc, 0xFF161719.toInt(), 0xFFFFFFFF.toInt(), isSplit = true, splitColorHex = 0xFFFFFFFF.toInt())
+        )
+
         fun render() {
             layout.root.background = createBottomSheetSurfaceDrawable()
             layout.container.removeAllViews()
@@ -407,9 +427,8 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
                 getString(R.string.choose_how_serene_looks)
             )
 
-            val resolvedPreviewTheme = resolveThemePreviewMode(selectedTheme)
             layout.container.addView(
-                createThemePreviewCard(resolvedPreviewTheme == AppCompatDelegate.MODE_NIGHT_YES),
+                createThemePreviewCard(selectedTheme),
                 LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT
@@ -421,24 +440,8 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
             )
 
             layout.container.addView(
-                createSegmentedSelector(
-                    labels = listOf(
-                        getString(R.string.light),
-                        getString(R.string.dark),
-                        getString(R.string.system_default)
-                    ),
-                    selectedIndex = when (selectedTheme) {
-                        AppCompatDelegate.MODE_NIGHT_NO -> 0
-                        AppCompatDelegate.MODE_NIGHT_YES -> 1
-                        else -> 2
-                    }
-                ) { index ->
-                    val nextTheme = when (index) {
-                        0 -> AppCompatDelegate.MODE_NIGHT_NO
-                        1 -> AppCompatDelegate.MODE_NIGHT_YES
-                        else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-                    }
-                    if (selectedTheme == nextTheme) return@createSegmentedSelector
+                createHorizontalThemeSelector(themeOptions, selectedTheme) { nextTheme ->
+                    if (selectedTheme == nextTheme) return@createHorizontalThemeSelector
                     selectedTheme = nextTheme
                     updateTheme(selectedTheme)
                     render()
@@ -446,12 +449,8 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
                 LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT
-                ).apply {
-                    marginStart = dpToPx(16)
-                    marginEnd = dpToPx(16)
-                }
+                )
             )
-
         }
 
         render()
@@ -903,7 +902,13 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
 
     private fun updateTheme(appTheme: Int) {
         val hostActivity = requireActivity() as? androidx.appcompat.app.AppCompatActivity
-        if (prefs.appTheme == appTheme && hostActivity?.delegate?.localNightMode == appTheme) return
+        val isSysDark = hostActivity?.isDarkThemeOn() ?: false
+        val targetNightMode = if (isThemeDark(appTheme, isSysDark)) {
+            AppCompatDelegate.MODE_NIGHT_YES
+        } else {
+            AppCompatDelegate.MODE_NIGHT_NO
+        }
+        if (prefs.appTheme == appTheme && hostActivity?.delegate?.localNightMode == targetNightMode) return
         prefs.appTheme = appTheme
         populateAppThemeText(appTheme)
         setAppTheme(appTheme)
@@ -911,10 +916,17 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
 
     private fun setAppTheme(theme: Int) {
         val hostActivity = requireActivity() as? androidx.appcompat.app.AppCompatActivity ?: return
-        hostActivity.delegate.localNightMode = theme
+        val isSysDark = hostActivity.isDarkThemeOn()
+        val targetNightMode = if (isThemeDark(theme, isSysDark)) {
+            AppCompatDelegate.MODE_NIGHT_YES
+        } else {
+            AppCompatDelegate.MODE_NIGHT_NO
+        }
+        hostActivity.delegate.localNightMode = targetNightMode
+        hostActivity.setTheme(getThemeResId(theme, isSysDark))
         hostActivity.delegate.applyDayNight()
         if (prefs.dailyWallpaper) {
-            setPlainWallpaper(theme)
+            setPlainWallpaperByTheme(requireContext(), theme)
             viewModel.setWallpaperWorker()
         }
         hostActivity.window.decorView.post {
@@ -932,23 +944,21 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
     }
 
     private fun setPlainWallpaper(appTheme: Int) {
-        when (appTheme) {
-            AppCompatDelegate.MODE_NIGHT_YES -> setPlainWallpaper(requireContext(), android.R.color.black)
-            AppCompatDelegate.MODE_NIGHT_NO -> setPlainWallpaper(requireContext(), android.R.color.white)
-            else -> {
-                if (requireContext().isDarkThemeOn())
-                    setPlainWallpaper(requireContext(), android.R.color.black)
-                else setPlainWallpaper(requireContext(), android.R.color.white)
-            }
-        }
+        setPlainWallpaperByTheme(requireContext(), appTheme)
     }
 
     private fun populateAppThemeText(appTheme: Int = prefs.appTheme) {
-        when (appTheme) {
-            AppCompatDelegate.MODE_NIGHT_YES -> binding.appThemeText.text = getString(R.string.dark)
-            AppCompatDelegate.MODE_NIGHT_NO -> binding.appThemeText.text = getString(R.string.light)
-            else -> binding.appThemeText.text = getString(R.string.system_default)
-        }
+        binding.appThemeText.text = getString(
+            when (appTheme) {
+                Constants.Theme.CHARCOAL -> R.string.theme_charcoal_grey
+                Constants.Theme.PITCH_BLACK -> R.string.theme_pitch_black
+                Constants.Theme.MIDNIGHT -> R.string.theme_midnight_navy
+                Constants.Theme.LIGHT -> R.string.theme_clean_light
+                Constants.Theme.WARM_PAPER -> R.string.theme_warm_paper
+                Constants.Theme.SYSTEM -> R.string.theme_system_default
+                else -> R.string.theme_charcoal_grey
+            }
+        )
     }
 
     private fun populateTextSize() {
@@ -1314,9 +1324,9 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         }
     }
 
-    private fun createThemePreviewCard(isDark: Boolean): MaterialCardView {
-        val backgroundColor = if (isDark) 0xFF121316.toInt() else 0xFFF7F7F8.toInt()
-        val textColor = if (isDark) requireContext().getColor(android.R.color.white) else requireContext().getColorFromAttr(R.attr.primaryColor)
+    private fun createThemePreviewCard(selectedTheme: Int): MaterialCardView {
+        val backgroundColor = getThemeBackgroundColor(requireContext(), selectedTheme)
+        val textColor = getThemeTextColor(requireContext(), selectedTheme)
         return MaterialCardView(requireContext()).apply {
             radius = dpToPx(24).toFloat()
             strokeWidth = dpToPx(1)
@@ -1339,13 +1349,124 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         }
     }
 
-    private fun resolveThemePreviewMode(selectedTheme: Int): Int {
-        return if (selectedTheme == AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM) {
-            if (requireContext().isDarkThemeOn()) AppCompatDelegate.MODE_NIGHT_YES
-            else AppCompatDelegate.MODE_NIGHT_NO
-        } else {
-            selectedTheme
+    private fun createThemeSwatchView(option: ThemeOption): View {
+        val size = dpToPx(30)
+        val container = FrameLayout(requireContext()).apply {
+            layoutParams = LinearLayout.LayoutParams(size, size).apply {
+                marginEnd = dpToPx(14)
+            }
         }
+        if (option.isSplit) {
+            val splitLayout = LinearLayout(requireContext()).apply {
+                orientation = LinearLayout.HORIZONTAL
+                layoutParams = FrameLayout.LayoutParams(size, size)
+                clipToOutline = true
+                background = GradientDrawable().apply {
+                    shape = GradientDrawable.OVAL
+                    setStroke(dpToPx(1), requireContext().getColorFromAttr(R.attr.primaryColorInverseTrans50))
+                }
+                addView(View(requireContext()).apply {
+                    setBackgroundColor(option.primaryColorHex)
+                    layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1f)
+                })
+                addView(View(requireContext()).apply {
+                    setBackgroundColor(option.splitColorHex)
+                    layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1f)
+                })
+            }
+            container.addView(splitLayout)
+        } else {
+            val outerCircle = View(requireContext()).apply {
+                layoutParams = FrameLayout.LayoutParams(size, size)
+                background = GradientDrawable().apply {
+                    shape = GradientDrawable.OVAL
+                    setColor(option.primaryColorHex)
+                    setStroke(dpToPx(1), requireContext().getColorFromAttr(R.attr.primaryColorInverseTrans50))
+                }
+            }
+            val innerDotSize = dpToPx(10)
+            val innerDot = View(requireContext()).apply {
+                layoutParams = FrameLayout.LayoutParams(innerDotSize, innerDotSize).apply {
+                    gravity = Gravity.CENTER
+                }
+                background = GradientDrawable().apply {
+                    shape = GradientDrawable.OVAL
+                    setColor(option.accentColorHex)
+                }
+            }
+            container.addView(outerCircle)
+            container.addView(innerDot)
+        }
+        return container
+    }
+
+    private fun createHorizontalThemeSelector(
+        options: List<ThemeOption>,
+        selectedId: Int,
+        onSelected: (Int) -> Unit
+    ): View {
+        val context = requireContext()
+        val scroll = HorizontalScrollView(context).apply {
+            isHorizontalScrollBarEnabled = false
+            overScrollMode = View.OVER_SCROLL_NEVER
+            clipToPadding = false
+            setPadding(dpToPx(16), 0, dpToPx(16), 0)
+        }
+        val row = LinearLayout(context).apply {
+            orientation = LinearLayout.HORIZONTAL
+            var selectedView: View? = null
+            options.forEachIndexed { index, option ->
+                val isSelected = option.id == selectedId
+                val item = LinearLayout(context).apply {
+                    orientation = LinearLayout.HORIZONTAL
+                    gravity = Gravity.CENTER_VERTICAL
+                    background = createSegmentedOptionDrawable(isSelected)
+                    minimumHeight = dpToPx(52)
+                    setPadding(dpToPx(14), dpToPx(8), dpToPx(16), dpToPx(8))
+                    isClickable = true
+                    isFocusable = true
+                    setOnClickListener { onSelected(option.id) }
+                    layoutParams = LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                    ).apply {
+                        if (index > 0) marginStart = dpToPx(8)
+                    }
+
+                    addView(createThemeSwatchView(option).apply {
+                        (layoutParams as? LinearLayout.LayoutParams)?.marginEnd = dpToPx(8)
+                    })
+
+                    addView(TextView(context).apply {
+                        text = getString(option.titleRes)
+                        setTextColor(
+                            if (isSelected) {
+                                context.getColorFromAttr(R.attr.primaryColor)
+                            } else {
+                                context.getColorFromAttr(R.attr.primaryColorTrans80)
+                            }
+                        )
+                        textSize = 15f
+                        typeface = Typeface.create(
+                            if (isSelected) "sans-serif-medium" else "sans-serif",
+                            Typeface.NORMAL
+                        )
+                    })
+                }
+                if (isSelected) {
+                    selectedView = item
+                }
+                addView(item)
+            }
+            selectedView?.let { view ->
+                post {
+                    val scrollX = view.left - dpToPx(16)
+                    scroll.smoothScrollTo(scrollX.coerceAtLeast(0), 0)
+                }
+            }
+        }
+        scroll.addView(row)
+        return scroll
     }
 
     private fun createPreviewContent(
@@ -1465,15 +1586,15 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
     }
 
     private fun segmentedSelectedFillColor(): Int {
-        return if (requireContext().isDarkThemeOn()) 0xFF2C2C30.toInt() else 0xFFECECEF.toInt()
+        return requireContext().getColorFromAttr(R.attr.customTileColor)
     }
 
     private fun segmentedStrokeColor(): Int {
-        return if (requireContext().isDarkThemeOn()) 0xFF4B4B52.toInt() else 0xFFD3D3D8.toInt()
+        return requireContext().getColorFromAttr(R.attr.primaryColorInverseTrans50)
     }
 
     private fun previewCardBackgroundColor(): Int {
-        return if (requireContext().isDarkThemeOn()) 0xFF121316.toInt() else 0xFFF7F7F8.toInt()
+        return getThemeBackgroundColor(requireContext(), prefs.appTheme)
     }
 
     private fun previewCardStrokeColor(): Int {
