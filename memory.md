@@ -12,8 +12,8 @@ Use this file as the handoff summary for future chats. New chats should read thi
 ## Current Baseline
 
 - `compileSdk = 36`
-- `targetSdkVersion = 36`
-- `versionCode = 75` (`v5.2.6`)
+- Target SDK: 36 (Android 16 preview / Android 15+)
+- `versionCode = 76` (`v5.2.7`)
 - project rebrand from `Olauncher` to `Serene Screen` is already done
 - build has been passing with `./gradlew :app:assembleDebug`
 
