@@ -57,8 +57,12 @@ Use this file as the handoff summary for future chats. New chats should read thi
   - `Warm Paper` (Eye-friendly warm sepia / parchment `#F6F2EB`)
   - `System Default` (Dynamically follows OS day/night mode)
 - Theme bottom sheet features a live preview card and a compact horizontal scrollable selector with pill chips and color swatches
-- Live theme switching updates all app surfaces, cards, and text in real time
-- Existing users' settings are preserved (legacy dark users remain on Pitch Black; new installs default to Charcoal Grey)
+### Double tap to lock & Modern Dialogs
+- Restored and integrated the `Double tap to lock` setting as a modern switch row in Settings under the **Gestures** section card
+- Full support for Android Accessibility service (`GLOBAL_ACTION_LOCK_SCREEN` on Android 9+ to preserve biometric/fingerprint unlock) and Device Admin fallback on older versions
+- Added `onResume()` in `SettingsFragment` to automatically sync switch state when returning from Android Accessibility Settings
+- Enforced `prefs.lockModeOn` check in `HomeFragment.kt` `onDoubleClick()` so double tap gestures only trigger when enabled
+- Redesigned in-app dialogs (`accessibilityLayout` & `messageLayout`) into modern 28dp Material 3 cards with theme-matching background (`?attr/customTileColor`), circular icon header badge, simplified 3-point bulleted copy, and styled pill action buttons
 
 ### Status bar / insets / layout fixes
 

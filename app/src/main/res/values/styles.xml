@@ -16,6 +16,8 @@
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:enforceNavigationBarContrast" tools:targetApi="q">false</item>
+        <item name="materialAlertDialogTheme">@style/SereneScreenAlertDialog</item>
+        <item name="alertDialogTheme">@style/SereneScreenAlertDialog</item>
     </style>
 
     <!-- Theme: Charcoal Grey (Default Soft Eye-Friendly Dark) -->
@@ -185,6 +187,25 @@
 
     <style name="TextSmallLight" parent="TextSmall">
         <item name="android:textColor">@drawable/text_colors_light</item>
+    </style>
+
+    <!-- Modern Material Alert Dialog Styling -->
+    <style name="SereneScreenAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="shapeAppearanceOverlay">@style/SereneScreenDialogCorner</item>
+        <item name="colorSurface">?attr/customTileColor</item>
+        <item name="colorOnSurface">?attr/primaryColor</item>
+        <item name="buttonBarPositiveButtonStyle">@style/SereneScreenDialogButton</item>
+        <item name="buttonBarNegativeButtonStyle">@style/SereneScreenDialogButton</item>
+    </style>
+
+    <style name="SereneScreenDialogCorner" parent="">
+        <item name="cornerSize">28dp</item>
+    </style>
+
+    <style name="SereneScreenDialogButton" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">?attr/primaryColor</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 
 </resources>

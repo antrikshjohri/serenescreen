@@ -662,10 +662,14 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
 
             override fun onDoubleClick() {
                 super.onDoubleClick()
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
-                    binding.lock.performClick()
-                else if (prefs.lockModeOn)
-                    lockPhone()
+                if (prefs.lockModeOn) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                        if (isAccessServiceEnabled(requireContext()))
+                            binding.lock.performClick()
+                    } else {
+                        lockPhone()
+                    }
+                }
             }
         }
     }

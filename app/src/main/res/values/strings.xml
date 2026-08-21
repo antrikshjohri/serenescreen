@@ -96,7 +96,7 @@
         \n\nShare the app and help us spread the word. Thank you!</string>
     <string name="keyboard_message">Hi, keyboard is the fastest way to find and launch apps in Serene Screen. Can we request you to keep this On for a few more days and then decide?
         \n\nThe choice is always yours.</string>
-    <string name="accessibility_service_description">The accessibility permission is required to enable double tap to lock. Any data acquired by SereneScreen via this service will not leave your device.</string>
+    <string name="accessibility_service_description">The accessibility permission is only used to turn off your screen when you double-tap. Serene Screen does not collect or share any data.</string>
     <string name="lock_layout_description">lock layout description to be used a unique id to lock screen</string>
     <string name="support_serenescreen_for_free">Support Serene Screen for free by using our Amazon affiliate link.</string>
     <string name="support_serenescreen_message">Every time you buy something using our link, we get a small commission. Please save the link and use it whenever you shop online.\nThank you!</string>
@@ -110,6 +110,9 @@
     <string name="roadmap">Roadmap</string>
     <string name="date">Date</string>
     <string name="date_only">Date only</string>
+    <string name="set_launcher_subtitle">Make Serene Screen your primary home screen</string>
+    <string name="home_app_align">Home app alignment</string>
+    <string name="bottom">Bottom</string>
     <string name="bottom_on">"Bottom: On "</string>
     <string name="bottom_off">Bottom: Off</string>
     <string name="please_set_serenescreen_as_default_first">Please set Serene Screen as your default launcher first</string>
@@ -136,16 +139,16 @@
     <string name="bottom_align_apps">Bottom align apps</string>
     <string name="align_to_bottom">Align to bottom</string>
     <string name="preview_updates_when_you_change_the_option">Preview updates when you change the option.</string>
-    <string name="preview_updates_when_you_change_the_options">Preview updates when you change the options.</string>
     <string name="choose_what_happens_on_swipe_down">Choose what happens when you swipe down.</string>
-    <string name="accessibility_disclosure">Please turn on or off Serene Screen\'s accessibility service in your device\'s settings to enable or disable this feature.
-    \n\nPlease note that this service is only used to let you turn off your device\'s screen using the double tap gesture.
-    Our accessibility service does not collect or share any data.</string>
+    <string name="accessibility_disclosure">To lock your screen with a double tap, enable Serene Screen in Android Settings:\n\n1. Tap Enable below to open Settings\n2. Tap Downloaded apps (or Installed apps)\n3. Turn ON \"Use Serene Screen\" (leave Shortcut OFF)\n4. Tap Allow on the system prompt\n\n• Used only to turn off your screen\n• Zero data is ever collected or shared</string>
     <string name="accept">Accept</string>
     <string name="permission">Permission</string>
     <string name="double_tap_lock">Double tap to lock</string>
     <string name="enable">Enable</string>
     <string name="disable">Disable</string>
+    <string name="cancel">Cancel</string>
+    <string name="got_it">Got it</string>
+    <string name="privacy_guaranteed">100% Private • Zero data collected</string>
     <string name="not_working"><u>Not working?</u></string>
     <string name="info">Info</string>
     <string name="delete">Delete</string>

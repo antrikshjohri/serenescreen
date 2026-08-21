@@ -96,6 +96,22 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         return binding.root
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            if (isAccessServiceEnabled(requireContext())) {
+                prefs.lockModeOn = true
+            }
+        } else {
+            checkAdminPermission()
+        }
+        populateDoubleTapLock()
+        viewModel.isSereneScreenDefault()
+        populateSwipeApps()
+        populateAlignment()
+        populateStatusBar()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         prefs = Prefs(requireContext())
@@ -115,7 +131,7 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         binding.homeAppsNum.text = prefs.homeAppsNum.toString()
         binding.homeAppsNumSlider.value = prefs.homeAppsNum.toFloat()
         populateKeyboardText()
-        //populateLockSettings()
+        populateDoubleTapLock()
         //populateWallpaperText()
         populateAppThemeText()
         populateTextSize()
@@ -148,7 +164,7 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
             R.id.serenescreenHiddenApps -> showHiddenApps()
             R.id.appInfo -> openAppInfo(requireContext(), android.os.Process.myUserHandle(), BuildConfig.APPLICATION_ID)
             R.id.setLauncher, R.id.setLauncherRow, R.id.changeLauncherLink -> requestDefaultLauncher()
-            R.id.toggleLock -> toggleLockMode()
+            R.id.toggleLock, R.id.doubleTapLockRow, R.id.doubleTapLockSwitch -> toggleLockMode()
             R.id.autoShowKeyboardSwitch, R.id.autoShowKeyboardRow -> toggleKeyboardText()
             R.id.homeAppsNum, R.id.homeAppsNumRow -> {
                 showHomeAppsSelector()
@@ -172,8 +188,8 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
             R.id.themeSystem -> updateTheme(Constants.Theme.SYSTEM)
             R.id.textSizeValue, R.id.textSizeRow -> showTextSizeDialog()
             R.id.actionAccessibility -> openAccessibilityService()
-            R.id.closeAccessibility -> toggleAccessibilityVisibility(false)
-            //R.id.notWorking -> requireContext().openUrl(Constants.URL_DOUBLE_TAP)
+            R.id.closeAccessibility, R.id.accessibilityLayout -> toggleAccessibilityVisibility(false)
+            R.id.notWorking -> showAccessibilityTroubleshootingDialog()
 
             R.id.textSize1 -> updateTextSizeScale(Constants.TextSize.ONE)
             R.id.textSize2 -> updateTextSizeScale(Constants.TextSize.TWO)
@@ -232,7 +248,8 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         binding.root.findViewById<View>(R.id.changeLauncherLink)?.setOnClickListener(this)
         binding.autoShowKeyboardSwitch?.setOnClickListener(this)
         binding.root.findViewById<View>(R.id.autoShowKeyboardRow)?.setOnClickListener(this)
-        //binding.toggleLock.setOnClickListener(this)
+        binding.doubleTapLockSwitch?.setOnClickListener(this)
+        binding.root.findViewById<View>(R.id.doubleTapLockRow)?.setOnClickListener(this)
         binding.homeAppsNum.setOnClickListener(this)
         binding.root.findViewById<View>(R.id.homeAppsNumRow)?.setOnClickListener(this)
         //binding.dailyWallpaperUrl.setOnClickListener(this)
@@ -269,6 +286,7 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         binding.actionAccessibility.setOnClickListener(this)
         binding.closeAccessibility.setOnClickListener(this)
         binding.notWorking.setOnClickListener(this)
+        binding.accessibilityLayout.setOnClickListener(this)
 
         binding.rate.setOnClickListener(this)
         binding.root.findViewById<View>(R.id.rateRow)?.setOnClickListener(this)
@@ -632,6 +650,7 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         binding.autoShowKeyboardSwitch?.let(::styleSettingsSwitch)
         binding.dateTimeSwitch?.let(::styleSettingsSwitch)
         binding.statusBarSwitch?.let(::styleSettingsSwitch)
+        binding.doubleTapLockSwitch?.let(::styleSettingsSwitch)
     }
 
     private fun applyWindowInsets() {
@@ -791,33 +810,60 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
     private fun toggleAccessibilityVisibility(show: Boolean) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
             binding.notWorking.visibility = View.VISIBLE
-        if (isAccessServiceEnabled(requireContext()))
-            binding.actionAccessibility.text = getString(R.string.disable)
+        binding.actionAccessibility.text = getString(
+            if (isAccessServiceEnabled(requireContext())) R.string.disable
+            else R.string.enable
+        )
         binding.accessibilityLayout.isVisible = show
         binding.scrollView.animateAlpha(if (show) 0.5f else 1f)
+        if (!show) {
+            populateDoubleTapLock()
+        }
+    }
+
+    private fun showAccessibilityTroubleshootingDialog() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.double_tap_lock)
+            .setMessage(
+                "If double tap to lock is not working:\n\n" +
+                "1. Make sure Serene Screen is turned ON in Accessibility Settings.\n\n" +
+                "2. If Android shows 'Restricted setting', open App Info > tap (⋮) in the top-right corner > tap 'Allow restricted settings', then turn on Accessibility."
+            )
+            .setPositiveButton("Accessibility") { dialog, _ ->
+                dialog.dismiss()
+                openAccessibilityService()
+            }
+            .setNeutralButton("App Info") { dialog, _ ->
+                dialog.dismiss()
+                openAppInfo(requireContext(), android.os.Process.myUserHandle(), BuildConfig.APPLICATION_ID)
+            }
+            .setNegativeButton(R.string.close, null)
+            .show()
     }
 
     private fun openAccessibilityService() {
         toggleAccessibilityVisibility(false)
-        // prefs.lockModeOn = true
-        //populateLockSettings()
+        prefs.lockModeOn = true
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
             startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
     }
 
     private fun toggleLockMode() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            toggleAccessibilityVisibility(true)
-            if (prefs.lockModeOn) {
-                prefs.lockModeOn = false
-                removeActiveAdmin()
+            if (isAccessServiceEnabled(requireContext())) {
+                prefs.lockModeOn = !prefs.lockModeOn
+                populateDoubleTapLock()
+            } else {
+                populateDoubleTapLock()
+                toggleAccessibilityVisibility(true)
             }
         } else {
             val isAdmin: Boolean = deviceManager.isAdminActive(componentName)
             if (isAdmin) {
-                removeActiveAdmin("Admin permission removed.")
-                prefs.lockModeOn = false
+                prefs.lockModeOn = !prefs.lockModeOn
+                populateDoubleTapLock()
             } else {
+                populateDoubleTapLock()
                 val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN)
                 intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, componentName)
                 intent.putExtra(
@@ -827,7 +873,6 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
                 requireActivity().startActivityForResult(intent, Constants.REQUEST_CODE_ENABLE_ADMIN)
             }
         }
-        //populateLockSettings()
     }
 
     private fun removeActiveAdmin(toastMessage: String? = null) {
@@ -937,6 +982,7 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
             populateAlignment()
             populateDateTime()
             populateKeyboardText()
+            populateDoubleTapLock()
             populateSwipeApps()
             populateSwipeDownAction()
             populateStatusBar()
@@ -1013,19 +1059,19 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         else getString(R.string.bottom_off)
     }
 
-    /*private fun populateLockSettings() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            binding.toggleLock.text = getString(
-                if (isAccessServiceEnabled(requireContext())) R.string.on
-                else R.string.off
-            )
+    private fun isDoubleTapLockActive(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            isAccessServiceEnabled(requireContext()) && prefs.lockModeOn
         } else {
-            binding.toggleLock.text = getString(
-                if (prefs.lockModeOn) R.string.on
-                else R.string.off
-            )
+            deviceManager.isAdminActive(componentName) && prefs.lockModeOn
         }
-    }*/
+    }
+
+    private fun populateDoubleTapLock() {
+        val isActive = isDoubleTapLockActive()
+        binding.doubleTapLockSwitch?.isChecked = isActive
+        binding.toggleLock?.text = getString(if (isActive) R.string.on else R.string.off)
+    }
 
     private fun populateSwipeDownAction() {
         binding.swipeDownAction.text = when (prefs.swipeDownAction) {
@@ -1623,6 +1669,7 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
             R.id.dateTimeRow,
             R.id.statusBarRow,
             R.id.autoShowKeyboardRow,
+            R.id.doubleTapLockRow,
             R.id.swipeLeftRow,
             R.id.swipeRightRow,
             R.id.swipeDownRow,
