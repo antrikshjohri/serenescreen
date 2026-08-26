@@ -96,7 +96,7 @@
         \n\nShare the app and help us spread the word. Thank you!</string>
     <string name="keyboard_message">Hi, keyboard is the fastest way to find and launch apps in Serene Screen. Can we request you to keep this On for a few more days and then decide?
         \n\nThe choice is always yours.</string>
-    <string name="accessibility_service_description">The accessibility permission is only used to turn off your screen when you double-tap. Serene Screen does not collect or share any data.</string>
+    <string name="accessibility_service_description">Serene Screen uses Accessibility only to detect its own lock action after a double tap and ask Android to lock the screen. No Accessibility data is stored, sent, sold, or shared.</string>
     <string name="lock_layout_description">lock layout description to be used a unique id to lock screen</string>
     <string name="support_serenescreen_for_free">Support Serene Screen for free by using our Amazon affiliate link.</string>
     <string name="support_serenescreen_message">Every time you buy something using our link, we get a small commission. Please save the link and use it whenever you shop online.\nThank you!</string>
@@ -140,7 +140,8 @@
     <string name="align_to_bottom">Align to bottom</string>
     <string name="preview_updates_when_you_change_the_option">Preview updates when you change the option.</string>
     <string name="choose_what_happens_on_swipe_down">Choose what happens when you swipe down.</string>
-    <string name="accessibility_disclosure">To lock your screen with a double tap, enable Serene Screen in Android Settings:\n\n1. Tap Enable below to open Settings\n2. Tap Downloaded apps (or Installed apps)\n3. Turn ON \"Use Serene Screen\" (leave Shortcut OFF)\n4. Tap Allow on the system prompt\n\n• Used only to turn off your screen\n• Zero data is ever collected or shared</string>
+    <string name="accessibility_disclosure">Serene Screen needs Accessibility access for Double tap to lock.\n\nData accessed: click events and window content needed to detect Serene Screen\'s own hidden lock action.\n\nUse: when you double-tap the home screen, Serene Screen asks Android to lock the screen. No Accessibility data is stored, sent, sold, or shared.\n\nTap \"I agree, enable\" to consent and open Android Settings. Then choose Downloaded apps, select Serene Screen, turn on Use Serene Screen, and tap Allow.</string>
+    <string name="accessibility_accept_enable">I agree, enable</string>
     <string name="accept">Accept</string>
     <string name="permission">Permission</string>
     <string name="double_tap_lock">Double tap to lock</string>

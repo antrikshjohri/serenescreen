@@ -812,7 +812,7 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
             binding.notWorking.visibility = View.VISIBLE
         binding.actionAccessibility.text = getString(
             if (isAccessServiceEnabled(requireContext())) R.string.disable
-            else R.string.enable
+            else R.string.accessibility_accept_enable
         )
         binding.accessibilityLayout.isVisible = show
         binding.scrollView.animateAlpha(if (show) 0.5f else 1f)

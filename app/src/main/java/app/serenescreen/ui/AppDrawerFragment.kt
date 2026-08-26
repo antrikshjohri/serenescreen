@@ -120,10 +120,8 @@ class AppDrawerFragment : Fragment() {
                         uninstall(it.appPackage)
                 }
             },
-            appHideListener = { appModel, position ->
-                adapter.appFilteredList.removeAt(position)
-                adapter.notifyItemRemoved(position)
-                adapter.appsList.remove(appModel)
+            appHideListener = { appModel, _ ->
+                if (!adapter.removeApp(appModel)) return@AppDrawerAdapter
 
                 val newSet = mutableSetOf<String>()
                 newSet.addAll(prefs.hiddenApps)

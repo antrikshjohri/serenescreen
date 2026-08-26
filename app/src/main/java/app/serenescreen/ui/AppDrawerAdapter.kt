@@ -43,22 +43,19 @@ class AppDrawerAdapter(
     private val appFilter = createAppFilter()
     private val myUserHandle = android.os.Process.myUserHandle()
 
-    var appsList: MutableList<AppModel> = mutableListOf()
-    var appFilteredList: MutableList<AppModel> = mutableListOf()
+    private var appsList: List<AppModel> = emptyList()
+    private var appFilteredList: List<AppModel> = emptyList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
         ViewHolder(AdapterAppDrawerBinding.inflate(LayoutInflater.from(parent.context), parent, false))
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         try {
-            val position = holder.bindingAdapterPosition
-            if (position == RecyclerView.NO_POSITION || position >= appFilteredList.size) return
-            val appModel = appFilteredList[position]
             holder.bind(
                 flag,
                 appLabelGravity,
                 myUserHandle,
-                appModel,
+                getItem(position),
                 appClickListener,
                 appDeleteListener,
                 appInfoListener,
@@ -70,8 +67,6 @@ class AppDrawerAdapter(
         }
     }
 
-    override fun getItemCount(): Int = appFilteredList.size
-
     override fun getFilter(): Filter = this.appFilter
 
     private fun createAppFilter(): Filter {
@@ -80,8 +75,11 @@ class AppDrawerAdapter(
                 isBangSearch = charSearch?.startsWith("!") ?: false
                 autoLaunch = charSearch?.startsWith(" ")?.not() ?: true
 
-                val appFilteredList = (if (charSearch.isNullOrBlank()) appsList
-                else appsList.filter { app -> appLabelMatches(app.appLabel, charSearch) } as MutableList<AppModel>)
+                val appFilteredList = if (charSearch.isNullOrBlank()) {
+                    appsList
+                } else {
+                    appsList.filter { app -> appLabelMatches(app.appLabel, charSearch) }
+                }
 
                 val filterResults = FilterResults()
                 filterResults.values = appFilteredList
@@ -90,8 +88,8 @@ class AppDrawerAdapter(
 
             @Suppress("UNCHECKED_CAST")
             override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-                appFilteredList = results?.values as MutableList<AppModel>
-                submitList(appFilteredList) {
+                appFilteredList = (results?.values as? List<AppModel>).orEmpty()
+                submitList(appFilteredList.toList()) {
                     autoLaunch()
                 }
             }
@@ -119,17 +117,38 @@ class AppDrawerAdapter(
     }
 
     fun setAppList(appsList: MutableList<AppModel>) {
-        // Add empty app for bottom padding in recyclerview
-        appsList.add(AppModel("", null, "", "", android.os.Process.myUserHandle()))
-        this.appsList = appsList
-        this.appFilteredList = appsList
-        submitList(appsList)
+        val listWithFooter = appsList.toMutableList().apply {
+            // Add empty app for bottom padding in recyclerview
+            add(AppModel("", null, "", "", android.os.Process.myUserHandle()))
+        }
+        this.appsList = listWithFooter
+        this.appFilteredList = listWithFooter
+        submitList(listWithFooter.toList())
     }
 
     fun launchFirstInList() {
         if (appFilteredList.size > 0)
             appClickListener(appFilteredList[0])
     }
+
+    fun removeApp(appModel: AppModel): Boolean {
+        if (appModel.appPackage.isBlank()) return false
+
+        val updatedAppsList = appsList.filterNot { it.isSameApp(appModel) }
+        val updatedFilteredList = appFilteredList.filterNot { it.isSameApp(appModel) }
+        val appWasRemoved = updatedAppsList.size != appsList.size || updatedFilteredList.size != appFilteredList.size
+
+        if (appWasRemoved) {
+            appsList = updatedAppsList
+            appFilteredList = updatedFilteredList
+            submitList(updatedFilteredList.toList())
+        }
+
+        return appWasRemoved
+    }
+
+    private fun AppModel.isSameApp(other: AppModel): Boolean =
+        appPackage == other.appPackage && user == other.user
 
     class ViewHolder(private val binding: AdapterAppDrawerBinding) : RecyclerView.ViewHolder(binding.root) {
 

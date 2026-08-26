@@ -19,7 +19,7 @@ android {
         applicationId "app.serenescreen"
         minSdkVersion 23
         targetSdkVersion 36
-        versionCode 76
+        versionCode 77
         versionName "v5.3"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
